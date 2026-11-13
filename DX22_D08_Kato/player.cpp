@@ -2,9 +2,6 @@
 #include "Geometory.h"
 #include "Defines.h"
 #include "Input.h"
-//テスト
-//テスト２
-//テスト3
 Player::Player()
 	: m_pos{ 0.0f,0.0f,0.0f }
 	, m_time(0.0f)
