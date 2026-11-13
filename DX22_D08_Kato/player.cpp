@@ -2,8 +2,6 @@
 #include "Geometory.h"
 #include "Defines.h"
 #include "Input.h"
-//テスト
-//テスト２
 
 Player::Player()
 	: m_pos{ 0.0f,0.0f,0.0f }
