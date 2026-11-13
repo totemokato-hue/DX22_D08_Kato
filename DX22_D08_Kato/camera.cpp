@@ -1,8 +1,8 @@
 #include "camera.h"
 
 Camera::Camera()
-	: m_pos(0.0f,2.0f,-2.0f), m_look(0.0f,0.0f,0.0f), m_up(0.0f,2.1f,-2.0f)
-	, m_fovy(180.0f), m_aspect(16.0f / 9.0f)
+	: m_pos(0.0f,4.0f,-35.0f), m_look(0.0f,4.0f,0.0f), m_up(0.0f,5.0f,0.0f)
+	, m_fovy(DirectX::XMConvertToRadians(60.0f)), m_aspect(16.0f / 9.0f)
 	, m_near(CMETER(30.0f)), m_far(METER(100.0f))
 {
 

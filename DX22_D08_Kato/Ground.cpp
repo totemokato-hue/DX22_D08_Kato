@@ -1,6 +1,8 @@
-#include"Ground.h"
-#include"Geometory.h"
+#include "Ground.h"
+#include "Geometory.h"
 Ground::Ground()
+	: m_pos{ 0.0f, 0.0f, 0.0f }
+	, m_scale{ 1.0f, 1.0f, 1.0f }
 {
 }
 

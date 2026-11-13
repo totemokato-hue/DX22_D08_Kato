@@ -1,7 +1,7 @@
 #include "CameraDebug.h"
 
 CameraDebug::CameraDebug()
-	:m_radXZ(0.0f),m_radY(0.0f),m_radius(3.0f)
+	:m_radXZ(0.0f),m_radY(0.0f),m_radius(20.0f)
 {
 
 }
@@ -52,29 +52,29 @@ void CameraDebug::Update()
 	//‰ñ‚è‚İ‚Ìˆ—
 	if (IsKeyPress('A'))
 	{
-		m_radXZ += 0.1;
+		m_radXZ += 0.5;
     }
 	if (IsKeyPress('D'))
 	{
-		m_radXZ -= 0.1;
+		m_radXZ -= 0.5;
 	}
 	if (IsKeyPress('W'))
 	{
-		m_radY += 0.1;
+		m_radY += 0.5;
 	}
 	if (IsKeyPress('S'))
 	{
-		m_radY -= 0.1;
+		m_radY -= 0.5;
 	}
-	if (IsKeyPress(VK_SPACE))
-	{
-		m_radXZ = 0;
-	}
+	//if (IsKeyPress(VK_SPACE))
+	//{
+	//	m_radXZ = 0;
+	//}
 
 	//ƒJƒƒ‰‚Ì‹——£‚ğ•Ï‚¦‚éˆ—
 	if (IsKeyPress('Q')) { m_radius += 0.5; }
 	if (IsKeyPress('E')) { m_radius -= 0.5; }
-	m_pos.x = cos(m_radY) * -sin(m_radXZ) * m_radius + m_look.x;
-	m_pos.y = sin(m_radY) * m_radius + m_look.y;
-	m_pos.z = cos(m_radY) * -cos(m_radXZ) * m_radius + m_look.z;
+	m_pos.x = cosf(DirectX::XMConvertToRadians(m_radY)) * -sinf(DirectX::XMConvertToRadians(m_radXZ)) * m_radius + m_look.x;
+	m_pos.y = sinf(DirectX::XMConvertToRadians(m_radY)) * m_radius + m_look.y;
+	m_pos.z = cosf(DirectX::XMConvertToRadians(m_radY)) * -cosf(DirectX::XMConvertToRadians(m_radXZ)) * m_radius + m_look.z;
 }

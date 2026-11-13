@@ -28,11 +28,11 @@
     <Filter Include="ソース ファイル\Work">
       <UniqueIdentifier>{d40b6216-14f8-474d-bd1d-053eaf07e0c5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル\System\DirectX">
-      <UniqueIdentifier>{f3668724-0776-4a81-bfe4-460b3b211f3f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\System\DirectX">
       <UniqueIdentifier>{36a071c1-5faa-4aab-876a-ec9bef09e703}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\DirectX">
+      <UniqueIdentifier>{f3668724-0776-4a81-bfe4-460b3b211f3f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -93,6 +93,9 @@
     <ClCompile Include="CameraDebug.cpp">
       <Filter>ソース ファイル\Work</Filter>
     </ClCompile>
+    <ClCompile Include="player.cpp">
+      <Filter>ソース ファイル\Work</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Defines.h">
@@ -120,31 +123,34 @@
       <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
     <ClInclude Include="DirectX.h">
-      <Filter>ヘッダー ファイル\System\DirectX</Filter>
+      <Filter>ヘッダー ファイル\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="MeshBuffer.h">
-      <Filter>ヘッダー ファイル\System\DirectX</Filter>
+      <Filter>ヘッダー ファイル\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
-      <Filter>ヘッダー ファイル\System\DirectX</Filter>
+      <Filter>ヘッダー ファイル\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="ShaderList.h">
-      <Filter>ヘッダー ファイル\System\DirectX</Filter>
+      <Filter>ヘッダー ファイル\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Texture.h">
-      <Filter>ヘッダー ファイル\System\DirectX</Filter>
+      <Filter>ヘッダー ファイル\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Ground.h">
-      <Filter>ヘッダー ファイル\System\DirectX</Filter>
+      <Filter>ヘッダー ファイル\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="Goal.h">
-      <Filter>ヘッダー ファイル\System\DirectX</Filter>
+      <Filter>ヘッダー ファイル\DirectX</Filter>
     </ClInclude>
     <ClInclude Include="camera.h">
       <Filter>ヘッダー ファイル\System</Filter>
     </ClInclude>
     <ClInclude Include="CameraDebug.h">
       <Filter>ヘッダー ファイル\System</Filter>
+    </ClInclude>
+    <ClInclude Include="player.h">
+      <Filter>ヘッダー ファイル\DirectX</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

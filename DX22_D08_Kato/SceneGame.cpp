@@ -5,16 +5,20 @@
 SceneGame::SceneGame()
 {
 	m_pGround = new Ground;
-	m_pGround->SetPos(0.0f, -0.5f, 0.0f);
-	m_pGround->SetScale(3.0f, 0.4f, 3.0f);
+	m_pGround->SetPos(0.0f, -0.2f, 0.0f);
+	m_pGround->SetScale(10.0f, 0.4f, 20.0f);
 	m_pGoal = new Goal;
-	m_pGoal->SetPos(1.0f, 1.0f, 0.0f);
+	m_pGoal->SetPos(0.0f, 1.0f, 6.0f);
 	m_pCamera = new CameraDebug;
-	m_pModel = new Model();
-	if (!m_pModel->Load("Assets/Model/tree_forest.fbx",0.5))
-	{
-		MessageBox(NULL, "エラー", "モデル表示に失敗", MB_OK);
-	}
+	m_pPlayer = new Player;
+	m_pPlayer->SetPos(0.0f, 1.0f, -6.0f);
+
+
+	//m_pModel = new Model();
+	//if (!m_pModel->Load("Assets/Model/tree_forest.fbx",0.5))
+	//{
+	//	MessageBox(NULL, "エラー", "モデル表示に失敗", MB_OK);
+	//}
 	/*m_pGoal->SetScale(0.5f, 0.5f, 0.5f);*/
 }
 
@@ -35,27 +39,36 @@ SceneGame::~SceneGame()
 		m_pCamera = nullptr;
 	}
 
-	if (m_pModel) {
-		delete m_pModel;
-		m_pModel = nullptr;
+	if (m_pPlayer)
+	{
+		delete m_pPlayer;
+		m_pPlayer = nullptr;
 	}
+
+	//if (m_pModel) {
+	//	delete m_pModel;
+	//	m_pModel = nullptr;
+	//}
 }
 
 void SceneGame::Update()
 {
 	m_pGround->Update();
 	m_pGoal->Update();
+	m_pPlayer->Update();
 	m_pCamera->Update();
 }
 
 void SceneGame::Draw()
 {
+	SetDepthTest(DEPTH_ENABLE);
 	Geometory::SetView(m_pCamera->GetViewMatrix(true));
 	Geometory::SetProjection(m_pCamera->GetProjectionMatrix(true));
-	Geometory::DrawBox();
+	//Geometory::DrawBox();
 	m_pGround->Draw();
 	m_pGoal->Draw();
-	if (m_pModel) {
-		m_pModel->Draw();
-	}
+	m_pPlayer->Draw();
+	//if (m_pModel) {
+	//	m_pModel->Draw();
+	//}
 }
