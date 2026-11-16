@@ -106,6 +106,7 @@ void Ground::SetScale(float x, float y, float z)
 	m_scale.z = z;
 }
 
+//==== À•W‚Ìó‚¯“n‚µ ====	
 DirectX::XMFLOAT3 Ground::GetPos()
 {
 	return m_pos;

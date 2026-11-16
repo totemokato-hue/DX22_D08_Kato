@@ -7,9 +7,9 @@ class Ground {
 
 private:
 	Model* m_pModel;    //モデル情報
-	Camera* m_pCamera;
-	DirectX::XMFLOAT3 m_pos;        //ボールの位置
-	DirectX::XMFLOAT3 m_scale;
+	Camera* m_pCamera;  //カメラ情報
+	DirectX::XMFLOAT3 m_pos;        //座標
+	DirectX::XMFLOAT3 m_scale;      //拡大率
 
 public:
 	Ground();
