@@ -105,6 +105,12 @@
     <ClCompile Include="TopCamera.cpp">
       <Filter>ソース ファイル\System\DirectX</Filter>
     </ClCompile>
+    <ClCompile Include="SceneManeger.cpp">
+      <Filter>ソース ファイル\System\DirectX</Filter>
+    </ClCompile>
+    <ClCompile Include="ForcusPoint.cpp">
+      <Filter>ソース ファイル\Work</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Defines.h">
@@ -163,6 +169,18 @@
     </ClInclude>
     <ClInclude Include="CameraPlayer.h">
       <Filter>ヘッダー ファイル\System</Filter>
+    </ClInclude>
+    <ClInclude Include="PowerGauge.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="TopCamera.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManeger.h">
+      <Filter>ヘッダー ファイル\DirectX</Filter>
+    </ClInclude>
+    <ClInclude Include="ForcusPoint.h">
+      <Filter>ヘッダー ファイル\DirectX</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
