@@ -37,6 +37,7 @@ public:
 
 	void SetCamera(Camera* pCamera);
 	DirectX::XMFLOAT3 GetPos() { return m_pos; }
+	float GetPower() { return m_time; }
 
 	void UpdateIdle();
 	void UpdateAngle();

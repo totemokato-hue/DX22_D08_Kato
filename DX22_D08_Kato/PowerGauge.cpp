@@ -32,12 +32,13 @@
 * @brief	コンストラクタ
 */
 PowerGauge::PowerGauge()
-	:m_bPowerSign(true),
-	m_bGaugeDisplay(true),
-	m_bGaugeMove(true),
-	m_fPower(0.0f),
-	m_pGaugeTexture(nullptr),
-	m_pNeedleTexture(nullptr)
+	: m_bPowerSign(true)
+	, m_bGaugeDisplay(true)
+	, m_bGaugeMove(true)
+	, m_fPower(0.0f)
+	, m_pGaugeTexture(nullptr)
+	, m_pNeedleTexture(nullptr)
+	, m_pPlayer(nullptr)
 {
 	// テクスチャ生成
 	m_pGaugeTexture = new Texture();
@@ -103,28 +104,31 @@ void PowerGauge::Init()
 */
 void PowerGauge::Update()
 {
-	// ゲージの移動フラグが有効なら現在の符号に応じてパワーを増減
-	if (m_bGaugeMove)
-	{
-		if (m_bPowerSign)
-			m_fPower += CHARGE_POWER;
-		else
-			m_fPower -= CHARGE_POWER;
-	}
+	//// ゲージの移動フラグが有効なら現在の符号に応じてパワーを増減
+	//if (m_bGaugeMove)
+	//{
+	//	if (m_bPowerSign)
+	//		m_fPower += CHARGE_POWER;
+	//	else
+	//		m_fPower -= CHARGE_POWER;
 
-	// 範囲を超えていたら調整し符号を反転
-	// 最大
-	if (m_fPower >= MAX_POWER)
-	{
-		m_fPower = MAX_POWER;
-		m_bPowerSign = false;
-	}
-	// 最小
-	if (m_fPower <= 0)
-	{
-		m_fPower = 0;
-		m_bPowerSign = true;
-	}
+	//	
+	//}
+
+	//// 範囲を超えていたら調整し符号を反転
+	//// 最大
+	//if (m_fPower >= MAX_POWER)
+	//{
+	//	m_fPower = MAX_POWER;
+	//	m_bPowerSign = false;
+	//}
+	//// 最小
+	//if (m_fPower <= 0)
+	//{
+	//	m_fPower = 0;
+	//	m_bPowerSign = true;
+	//}
+	m_fPower = m_pPlayer->GetPower();
 }
 
 /**
@@ -177,7 +181,7 @@ void PowerGauge::Draw()
 
 	// 背景ゲージ
 	Sprite::SetTexture(m_pGaugeTexture);
-	Sprite::SetOffset({ 640.0f, 100.0f });
+	Sprite::SetOffset({ 1040.0f, 70.0f });
 	Sprite::SetSize({ 300.0f, 30.0f });
 	Sprite::Draw();
 
@@ -185,11 +189,11 @@ void PowerGauge::Draw()
 	float rate = m_fPower / MAX_POWER;
 
 	// 針のX座標
-	float needleX = 490.0f + 300.0f * rate;
+	float needleX = 890.0f + 300.0f * rate;
 
 	// 針を描画
 	Sprite::SetTexture(m_pNeedleTexture);
-	Sprite::SetOffset({ needleX, 100.0f });
+	Sprite::SetOffset({ needleX, 70.0f });
 	Sprite::SetSize({ 5.0f, 45.0f });
 	Sprite::Draw();
 }

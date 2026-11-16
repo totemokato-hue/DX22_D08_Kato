@@ -18,6 +18,8 @@
 
 //＝＝＝インクルード＝＝＝
 #include "Sprite.h"
+#include "player.h"
+
 
 class PowerGauge
 {
@@ -38,13 +40,15 @@ public:
 	void DisplayOff();
 	void Stop();
 	float GetPower();
+	void SetPlayer(Player* player) { m_pPlayer = player; }
+
 
 private:
 	//==================================================
 	// 定数定義
 	//==================================================
-	static constexpr float MAX_POWER = 10.0f;	// 最大パワー
-	static constexpr float CHARGE_POWER = 0.1f;	// パワーの変動量
+	static constexpr float MAX_POWER = 60.0f;	// 最大パワー
+	static constexpr float CHARGE_POWER = 1.0f;	// パワーの変動量
 
 	//==================================================
 	// メンバ変数
@@ -55,6 +59,8 @@ private:
 	float m_fPower;				// パワー
 	Texture* m_pGaugeTexture;	// ゲージのテクスチャのポインタ
 	Texture* m_pNeedleTexture;	// 矢印のテクスチャのポインタ
+	Player* m_pPlayer;			//パワーを決めるプレイヤー
+
 
 	//==================================================
 	// メンバ関数

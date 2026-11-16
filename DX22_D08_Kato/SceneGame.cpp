@@ -21,6 +21,7 @@ SceneGame::SceneGame()
 	m_pPlayer = new Player;
 	m_pPlayer->SetPos(0.0f, 1.0f, -6.0f);
 	m_pPowerGauge = new PowerGauge;
+	m_pPowerGauge->SetPlayer(m_pPlayer);
 	CameraPlayer* pCamera = new CameraPlayer();
 	m_pPlayer->SetCamera(pCamera);//‹…‚ð‘Å‚¿o‚·‚½‚ß‚ÌƒJƒƒ‰‚ðÝ’è
 	m_pGround->SetCamera(pCamera);
