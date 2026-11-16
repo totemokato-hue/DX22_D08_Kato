@@ -7,7 +7,7 @@
 #include "SceneGame.h"
 #include "Defines.h"
 #include "ShaderList.h"
-
+//テスト
 //--- グローバル変数
 Scene* g_pScene;
 
