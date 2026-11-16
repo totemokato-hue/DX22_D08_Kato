@@ -19,7 +19,7 @@ private:
 	Goal* m_pGoal;//ゴールオブジェクト
 	Camera* m_pCamera;//ゲーム中に動かすカメラ
 	Player* m_pPlayer;//プレイヤーオブジェクト
-	//Model* m_pModel;
+	Model* m_pModel;
 };
 
 #endif // __SCENE_GAME_H__

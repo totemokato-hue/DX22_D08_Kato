@@ -3,7 +3,7 @@
 
 VertexShader* ShaderList::m_pVS[VS_KIND_MAX];
 PixelShader* ShaderList::m_pPS[PS_KIND_MAX];
-
+DirectX::XMFLOAT4X4 ShaderList::m_wvp[3];
 
 ShaderList::ShaderList()
 {
@@ -16,6 +16,7 @@ void ShaderList::Init()
 {
 	MakeWorldVS();
 	MakeAnimeVS();
+	MakeUnlitPS();
 	MakeLambertPS();
 	MakeSpecularPS();
 	MakeToonPS();
@@ -26,7 +27,9 @@ void ShaderList::Init()
 	{
 		DirectX::XMStoreFloat4x4(&mat[i], DirectX::XMMatrixIdentity());
 	}
-	SetWVP(mat);
+	SetWorld(mat[0]);
+	SetView(mat[0]);
+	SetProjection(mat[0]);
 	SetBones(mat);
 
 	Model::Material material = {
@@ -36,7 +39,7 @@ void ShaderList::Init()
 		nullptr
 	};
 	SetMaterial(material);
-	SetLight(DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f));
+	SetLight(DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), DirectX::XMFLOAT3(-1.0f, -1.0f, 1.0f));
 	SetCameraPos(DirectX::XMFLOAT3(0.0f, 1.0f, -2.0f));
 	SetFog(DirectX::XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f), 50.0f, 50.0f);
 }
@@ -70,11 +73,28 @@ PixelShader* ShaderList::GetPS(PSKind ps)
 	return m_pPS[ps];
 }
 
-void ShaderList::SetWVP(DirectX::XMFLOAT4X4* wvp)
+void ShaderList::SetWorld(const DirectX::XMFLOAT4X4& world)
 {
+	m_wvp[0] = world;
 	for (int i = 0; i < VS_KIND_MAX; ++i)
 	{
-		m_pVS[i]->WriteBuffer(0, wvp);
+		m_pVS[i]->WriteBuffer(0, m_wvp);
+	}
+}
+void ShaderList::SetView(const DirectX::XMFLOAT4X4& view)
+{
+	m_wvp[1] = view;
+	for (int i = 0; i < VS_KIND_MAX; ++i)
+	{
+		m_pVS[i]->WriteBuffer(0, m_wvp);
+	}
+}
+void ShaderList::SetProjection(const DirectX::XMFLOAT4X4& proj)
+{
+	m_wvp[2] = proj;
+	for (int i = 0; i < VS_KIND_MAX; ++i)
+	{
+		m_pVS[i]->WriteBuffer(0, m_wvp);
 	}
 }
 void ShaderList::SetBones(DirectX::XMFLOAT4X4* bones200)
@@ -115,6 +135,7 @@ void ShaderList::SetCameraPos(const DirectX::XMFLOAT3 pos)
 	};
 	m_pPS[PS_SPECULAR]->WriteBuffer(2, param);
 	m_pPS[PS_TOON]->WriteBuffer(2, param);
+	m_pPS[PS_FOG]->WriteBuffer(2, param);
 }
 void ShaderList::SetFog(DirectX::XMFLOAT4 color, float start, float range)
 {
@@ -210,6 +231,35 @@ VS_OUT main(VS_IN vin) {
 	m_pVS[VS_ANIME] = new VertexShader();
 	m_pVS[VS_ANIME]->Compile(code);
 }
+void ShaderList::MakeUnlitPS()
+{
+	const char* code = R"EOT(
+struct PS_IN {
+	float4 pos : SV_POSITION;
+	float3 normal : NORMAL0;
+	float2 uv : TEXCOORD0;
+	float4 color : COLOR0;
+};
+cbuffer Material : register(b0)
+{
+	float4 objDiffuse;
+	float4 objAmbient;
+	float4 objSpecular;
+};
+Texture2D tex : register(t0);
+SamplerState samp : register(s0);
+float4 main(PS_IN pin) : SV_TARGET
+{
+	float4 color = float4(1.0f, 1.0f, 1.0f, 1.0f);
+	if(objAmbient.a >= 1.0f)
+		color = tex.Sample(samp, pin.uv);
+	float3 diffuse = objDiffuse.rgb;
+	color.rgb *= diffuse;
+	return color;
+})EOT";
+	m_pPS[PS_UNLIT] = new PixelShader();
+	m_pPS[PS_UNLIT]->Compile(code);
+}
 void ShaderList::MakeLambertPS()
 {
 	const char* code = R"EOT(
@@ -239,20 +289,11 @@ float4 main(PS_IN pin) : SV_TARGET
 		color = tex.Sample(samp, pin.uv);
 	float3 N = normalize(pin.normal);
 	float3 L = normalize(-lightDir);
-	float dotNL = saturate((dot(N, L) + 0.5f) / 1.5f);
+	float dotNL = saturate(dot(N, L));
 	float3 diffuse = objDiffuse.rgb * lightDiffuse.rgb;
 	float3 ambient = objAmbient.rgb * lightDiffuse.rgb;
 	float3 specular = objSpecular.rgb * lightDiffuse.rgb;
-	// 本来のLambert拡散反射（思った表現が出来なかったので採用せず
-	// color.rgb *= saturate(diffuse * dotNL + ambient);
-	// 環境光で拡散反射部分の色が変わらないようにlerp(環境光,diffuse,dotNL)で計算
-	// 環境光が弱ければ黒(乗算)、強ければ白(加算)となるように、各計算を線形で補間
-	diffuse *= color.rgb;
-	color.rgb = saturate(lerp(
-		lerp(diffuse * ambient, diffuse + ambient, pow(ambient, 4.0f)),
-		diffuse, dotNL));
-	// 本来なら必要ない鏡面反射、Lambert向けに若干だけ適用
-	color.rgb += specular * pow(saturate(dotNL), max(0.01f, objSpecular.a) * 0.5f) * 0.5f;
+	color.rgb *= saturate(lerp(diffuse * ambient, diffuse, dotNL));
 	return color;
 })EOT";
 	m_pPS[PS_LAMBERT] = new PixelShader();
@@ -294,16 +335,14 @@ float4 main(PS_IN pin) : SV_TARGET
 	float3 L = normalize(-lightDir);
 	float3 V = normalize(cameraPos.xyz - pin.wPos.xyz);
 	float3 R = reflect(-V, N);
-	float dotNL = saturate((dot(N, L) + 0.5f) / 1.5f);
+	float dotNL = saturate(dot(N, L));
 	float dotRL = saturate(dot(R, L));
 	float3 diffuse = objDiffuse.rgb * lightDiffuse.rgb;
 	float3 ambient = objAmbient.rgb * lightDiffuse.rgb;
 	float3 specular = objSpecular.rgb * lightDiffuse.rgb;
-	// Lambertの計算を参考
-	color.rgb *= saturate(lerp(
-		lerp(diffuse * ambient, diffuse + ambient, pow(ambient, 4.0f)),
-		diffuse, dotNL));
-	color.rgb += specular * saturate(pow(dotRL, max(0.01f, objSpecular.a)));
+	color.rgb *= saturate(lerp(diffuse * ambient, diffuse, dotNL));
+	if(objSpecular.a >= 1.0f)
+		color.rgb += specular * saturate(pow(dotRL, max(1.0f, objSpecular.a)));
 	return color;
 })EOT";
 	m_pPS[PS_SPECULAR] = new PixelShader();
@@ -317,6 +356,7 @@ struct PS_IN {
 	float3 normal : NORMAL0;
 	float2 uv : TEXCOORD0;
 	float4 color : COLOR0;
+	float4 wPos : POSITION0;
 };
 cbuffer Material : register(b0)
 {
@@ -329,6 +369,10 @@ cbuffer Light : register(b1)
 	float4 lightDiffuse;
 	float4 lightDir;
 };
+cbuffer Camera : register(b2)
+{
+	float4 cameraPos;
+};
 Texture2D tex : register(t0);
 SamplerState samp : register(s0);
 float4 main(PS_IN pin) : SV_TARGET
@@ -338,17 +382,25 @@ float4 main(PS_IN pin) : SV_TARGET
 		color = tex.Sample(samp, pin.uv);
 	float3 N = normalize(pin.normal);
 	float3 L = normalize(-lightDir);
-	float dotNL = dot(N, L); // マイナス込で計算
+	float3 V = normalize(cameraPos.xyz - pin.wPos.xyz);
+	float dotNL = saturate((dot(N, L) + 0.1f) / 1.1f);
 	float3 diffuse = objDiffuse.rgb * lightDiffuse.rgb;
 	float3 ambient = objAmbient.rgb * lightDiffuse.rgb;
 	float3 specular = objSpecular.rgb * lightDiffuse.rgb;
-	float toonNL = saturate((dot(N, L) + 0.5f) / 1.5f * 100.0f); // 陰の境目を柔らかく
-	// Lambertの計算を参考
-	color.rgb *= saturate(lerp(
-		lerp(diffuse * ambient, diffuse + ambient, pow(ambient, 4.0f)),
-		diffuse, toonNL));
-	if(objSpecular.a >= 1.0f)
-		color.rgb += specular * saturate(pow(dotNL, max(0.01f, objSpecular.a)) * 100.0f);
+	float toonNL = saturate(dotNL * 70.0f); // 陰の境目を柔らかく
+	color.rgb *= saturate(lerp(diffuse * ambient, diffuse, toonNL));
+	if(objSpecular.a >= 1.0f) {
+		float3 R = reflect(-V, N);
+		float dotRL = saturate(dot(R, L));
+		float toonSpec = pow(dotRL, max(1.0f, objSpecular.a));
+		toonSpec = saturate((toonSpec - 0.8f) / 0.2f);
+		color.rgb += specular * saturate(toonSpec * 70.0f);
+	}
+	// エセアウトライン
+	float edge = 1.0f - saturate(dot(V, N));
+	edge = step(0.8f, edge);
+	color.rgb *= 1.0f - edge;
+
 	return color;
 })EOT";
 	m_pPS[PS_TOON] = new PixelShader();

@@ -11,16 +11,17 @@ class ShaderList
 public:
 	enum VSKind
 	{
-		VS_WORLD, // SetWVP
-		VS_ANIME, // SetWVP,SetBones
+		VS_WORLD, // SetWorld/View/Projection
+		VS_ANIME, // SetWorld/View/Projection, SetBones
 		VS_KIND_MAX
 	};
 	enum PSKind
 	{
-		PS_LAMBERT, //SetMaterial, SetLight
-		PS_SPECULAR, //SetMaterial, SetLight, SetCameraPos
-		PS_TOON, // SetMaterial, SetLight
-		PS_FOG, // SetMaterial, SetLight,SetFog
+		PS_UNLIT,		// 画像貼り付け		SetMaterial
+		PS_LAMBERT,		// 拡散光+環境光		SetMaterial, SetLight
+		PS_SPECULAR,	// LAMBERT+鏡面反射	SetMaterial, SetLight, SetCameraPos
+		PS_TOON,		// アニメ表現		SetMaterial, SetLight, SetCameraPos
+		PS_FOG,			// 霧、遠くの背景		SetMaterial, SetLight, SetFog
 		PS_KIND_MAX
 	};
 
@@ -37,7 +38,9 @@ public:
 	static PixelShader* GetPS(PSKind ps);
 
 	// 定数バッファへの設定
-	static void SetWVP(DirectX::XMFLOAT4X4* wvp);
+	static void SetWorld(const DirectX::XMFLOAT4X4& world);
+	static void SetView(const DirectX::XMFLOAT4X4& view);
+	static void SetProjection(const DirectX::XMFLOAT4X4& proj);
 	static void SetBones(DirectX::XMFLOAT4X4* bones200);
 	static void SetMaterial(const Model::Material& material);
 	static void SetLight(DirectX::XMFLOAT4 color, DirectX::XMFLOAT3 dir);
@@ -47,6 +50,7 @@ public:
 private:
 	static void MakeWorldVS();
 	static void MakeAnimeVS();
+	static void MakeUnlitPS();
 	static void MakeLambertPS();
 	static void MakeSpecularPS();
 	static void MakeToonPS();
@@ -55,7 +59,7 @@ private:
 private:
 	static VertexShader* m_pVS[VS_KIND_MAX];
 	static PixelShader* m_pPS[PS_KIND_MAX];
-	
+	static DirectX::XMFLOAT4X4 m_wvp[3];
 };
 
 #endif // __SHADER_LIST_H__

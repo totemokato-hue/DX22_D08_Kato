@@ -1,6 +1,7 @@
 #include "Model.h"
 #include "DirectXTex/TextureLoad.h"
 #include <algorithm>
+#include <vector>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -84,27 +85,33 @@ Texture2D tex : register(t0);
 SamplerState samp : register(s0);
 float4 main(PS_IN pin) : SV_TARGET
 {
-	return tex.Sample(samp, pin.uv);
+	float2 uv = pin.uv * 4.0f;
+	uv = step(0.5f, frac(uv));
+	float val = abs(uv.x - uv.y);
+	return float4(val, 0.0f, val, 1.0f);
 })EOT";
 	const int texSize = 256;
-	BYTE color[texSize][texSize][4];
+	std::vector<BYTE> color;
+	color.resize(texSize * texSize * 4);
 	for (int j = 0; j < texSize; ++j) {
 		for (int i = 0; i < texSize; ++i) {
 			int devI = i / 32;
 			int devJ = j / 32;
+			int idx = (j * texSize + i) * 4;
 			int val = 255 * (((devJ % 2) + devI) % 2);
-			color[j][i][0] = val;
-			color[j][i][1] = val;
-			color[j][i][2] = val;
-			color[j][i][3] = 255;
+			color[idx + 0] = val;
+			color[idx + 1] = 0;
+			color[idx + 2] = val;
+			color[idx + 3] = 255;
 		}
 	}
+
 	*vs = new VertexShader();
 	(*vs)->Compile(ModelVS);
 	*ps = new PixelShader();
 	(*ps)->Compile(ModelPS);
 	*tex = new Texture();
-	(*tex)->Create(DXGI_FORMAT_R8G8B8A8_UNORM, texSize, texSize, color);
+	(*tex)->Create(DXGI_FORMAT_R8G8B8A8_UNORM, texSize, texSize, color.data());
 }
 
 

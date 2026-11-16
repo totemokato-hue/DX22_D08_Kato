@@ -1,8 +1,15 @@
 #include"CameraDebug.h"
 #include "SceneGame.h"
 #include "Geometory.h"
+#include "CameraPlayer.h"
+
 
 SceneGame::SceneGame()
+	: m_pGround(nullptr)
+	, m_pGoal(nullptr)
+	, m_pCamera(nullptr)
+	, m_pModel(nullptr)
+	, m_pPlayer(nullptr)
 {
 	m_pGround = new Ground;
 	m_pGround->SetPos(0.0f, -0.2f, 0.0f);
@@ -12,6 +19,11 @@ SceneGame::SceneGame()
 	m_pCamera = new CameraDebug;
 	m_pPlayer = new Player;
 	m_pPlayer->SetPos(0.0f, 1.0f, -6.0f);
+	CameraPlayer* pCamera = new CameraPlayer();
+	m_pPlayer->SetCamera(pCamera);//‹…‚ð‘Å‚¿o‚·‚½‚ß‚ÌƒJƒƒ‰‚ðÝ’è
+	pCamera->SetPlayer(m_pPlayer);
+
+	m_pCamera = pCamera;
 
 
 	//m_pModel = new Model();

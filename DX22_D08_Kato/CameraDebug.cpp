@@ -50,22 +50,25 @@ void CameraDebug::Update()
 
 	//ƒJƒƒ‰ˆÊ’u‚ÌˆÚ“®
 	//‰ñ‚è‚İ‚Ìˆ—
-	if (IsKeyPress('A'))
-	{
-		m_radXZ += 0.5;
-    }
-	if (IsKeyPress('D'))
-	{
-		m_radXZ -= 0.5;
-	}
-	if (IsKeyPress('W'))
-	{
-		m_radY += 0.5;
-	}
-	if (IsKeyPress('S'))
-	{
-		m_radY -= 0.5;
-	}
+
+	
+	//if (IsKeyPress('A'))
+	//{
+	//	m_radXZ += 0.5;
+	//}
+	//if (IsKeyPress('D'))
+	//{
+	//	m_radXZ -= 0.5;
+	//}
+	//if (IsKeyPress('W'))
+	//{
+	//	m_radY += 0.5;
+	//}
+	//if (IsKeyPress('S'))
+	//{
+	//	m_radY -= 0.5;
+	//}
+	
 	//if (IsKeyPress(VK_SPACE))
 	//{
 	//	m_radXZ = 0;
