@@ -8,6 +8,7 @@
 #include "Defines.h"
 #include "ShaderList.h"
 //テスト
+//q
 //--- グローバル変数
 Scene* g_pScene;
 
