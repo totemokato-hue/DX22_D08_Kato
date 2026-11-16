@@ -5,7 +5,7 @@
 #include "Goal.h"
 #include "camera.h"
 #include "player.h"
-
+#include"ShaderList.h"
 class SceneGame : public Scene
 {
 public:

@@ -76,6 +76,8 @@ void SceneGame::Draw()
 	SetDepthTest(DEPTH_ENABLE);
 	Geometory::SetView(m_pCamera->GetViewMatrix(true));
 	Geometory::SetProjection(m_pCamera->GetProjectionMatrix(true));
+	ShaderList::SetView(m_pCamera->GetViewMatrix(true));
+	ShaderList::SetProjection(m_pCamera->GetProjectionMatrix(true));
 	//Geometory::DrawBox();
 	m_pGround->Draw();
 	m_pGoal->Draw();
