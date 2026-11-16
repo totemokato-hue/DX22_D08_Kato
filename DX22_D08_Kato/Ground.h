@@ -1,11 +1,16 @@
+#pragma once
 #include <DirectXMath.h>
-#include "Shader.h"
-#include "MeshBuffer.h"
+#include "Model.h""
+#include "Camera.h"
 
 class Ground {
+
 private:
-	float m_pos[3];//座標
-	float m_scale[3];//拡大率
+	Model* m_pModel;    //モデル情報
+	Camera* m_pCamera;
+	DirectX::XMFLOAT3 m_pos;        //ボールの位置
+	DirectX::XMFLOAT3 m_scale;
+
 public:
 	Ground();
 	~Ground();
@@ -15,8 +20,13 @@ public:
 
 	//描画処理
 	void Draw();
-	//座標設定
+
+	void SetCamera(Camera* pCamera);
+
+	//設定
 	void SetPos(float x, float y, float z);
-	//拡大率の設定
 	void SetScale(float x, float y, float z);
+
+	//座標取得
+	DirectX::XMFLOAT3 GetPos();
 };
