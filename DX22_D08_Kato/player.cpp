@@ -31,7 +31,7 @@ Player::Player()
 {
 	m_pModel = new Model();
 
-	if (!m_pModel->Load("Assets/Model/box 2.fbx", 1.0f))
+	if (!m_pModel->Load("Assets/Model/box 2.fbx", 1.0f,Model::None))
 	{
 		MessageBox(NULL, "error", "player model failed", MB_OK);
 	}
