@@ -11,7 +11,7 @@ ForcusPoint::~ForcusPoint()
 
 }
 
-void ForcusPoint::Update(float cameraYaw)
+void ForcusPoint::Update(float cameraYaw,bool lockX = false)
 {
 	if (!m_tCamera)
 	{
@@ -52,7 +52,10 @@ void ForcusPoint::Update(float cameraYaw)
 	float C = cosf(cameraYaw);
 
 	//äpìxÇ…çáÇÌÇπÇΩà⁄ìÆãóó£ÇÃåvéZ
-	m_pos.x += (forward * S + right * C) * CAMERASPEED;
+	if (!lockX)
+	{
+		m_pos.x += (forward * S + right * C) * CAMERASPEED;
+	}
 	m_pos.z += (forward * C - right * S) * CAMERASPEED;
 }
 

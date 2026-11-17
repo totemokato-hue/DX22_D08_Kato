@@ -39,20 +39,21 @@ void TopCamera::Update()
 
         // 注視点を中心にカメラ位置を計算
         m_radXZ = -DirectX::XM_PIDIV2;
-        m_radY = 0.4;
-        m_radius = 6.0f;
-        m_pos.x = cosf(m_radY) * -sinf(m_radXZ) * m_radius + (m_look.x + 3.0);
+        m_radY = 0.3;
+        m_radius = 7.0f;
+        m_pos.x = 12.0f;
+        m_look.x = 0.0f;
         m_pos.y = sinf(m_radY) * m_radius + m_look.y;
         m_pos.z = cosf(m_radY) * -cosf(m_radXZ) * m_radius + m_look.z;
         break;
 
     case LEFT:
         m_radXZ = DirectX::XM_PIDIV2;
-        m_radY = 0.4;
-        m_radius = 6.0f;
-
+        m_radY = 0.3;
+        m_radius = 7.0f;
+        m_pos.x = -12.0f;
+        m_look.x = 0.0f;
         // 注視点を中心にカメラ位置を計算
-        m_pos.x = cosf(m_radY) * -sinf(m_radXZ) * m_radius + (m_look.x - 3.0);
         m_pos.y = sinf(m_radY) * m_radius + m_look.y;
         m_pos.z = cosf(m_radY) * -cosf(m_radXZ) * m_radius + m_look.z;
         break;

@@ -110,19 +110,19 @@ void SceneManeger::UpdateManeger()
 		//正面のトップカメラ
 	case F_CameraMode:
 		m_tCamera->SetMode(TopCamera::FRONT);
-		fPoint->Update(0.0f);
+		fPoint->Update(0.0f,false);
 		m_pGoal->Update();
 		break;
 
 	case R_CameraMode:
 		m_tCamera->SetMode(TopCamera::RIGHT);
-		fPoint->Update(-DirectX::XM_PIDIV2);
+		fPoint->Update(-DirectX::XM_PIDIV2,true);
 		m_pGoal->Update();
 		break;
 
 	case L_CameraMode:
 		m_tCamera->SetMode(TopCamera::LEFT);
-		fPoint->Update(DirectX::XM_PIDIV2);
+		fPoint->Update(DirectX::XM_PIDIV2,true);
 		m_pGoal->Update();
 		break;
 

@@ -12,7 +12,7 @@ public:
 	~ForcusPoint();
 
 	
-	void Update(float cameraYaw);
+	void Update(float cameraYaw, bool lockX);
 	void SetCamera(Camera* fCamera);
 	void Draw();
 	DirectX::XMFLOAT3 GetPos();
