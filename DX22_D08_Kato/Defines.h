@@ -18,6 +18,7 @@ static const float fFPS = static_cast<float>(FPS);
 #define MSEC(value) (value / fFPS)
 #define CMSEC(value) MSEC(CMETER(value))
 #define PI 3.1415926535
+#define CAMERASPEED 0.1f
 static const float GRAVITY = 0.98f;
 
 // ƒ^ƒCƒgƒ‹

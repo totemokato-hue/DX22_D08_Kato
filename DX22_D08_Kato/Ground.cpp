@@ -49,8 +49,7 @@ void Ground::Draw()
 
 		//シェーダーに必要なデータを設定
 		ShaderList::SetWorld(fworld);
-		ShaderList::SetView(m_pCamera->GetViewMatrix());
-		ShaderList::SetProjection(m_pCamera->GetProjectionMatrix());
+		
 
 		//モデルに使用する各種シェーダーを設定
 		m_pModel->SetVertexShader(ShaderList::GetVS(ShaderList::VS_WORLD));
