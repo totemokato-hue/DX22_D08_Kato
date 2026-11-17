@@ -31,7 +31,7 @@ Player::Player()
 {
 	m_pModel = new Model();
 
-	if (!m_pModel->Load("Assets/Model/box 2.fbx", 1.0f))
+	if (!m_pModel->Load("Assets/Model/box 2.fbx", 1.0f,Model::None))
 	{
 		MessageBox(NULL, "error", "player model failed", MB_OK);
 	}
@@ -177,15 +177,15 @@ void Player::UpdateAngle()
 	if (IsKeyPress('A'))//Aキーで左に回転
 	{
 		m_rotate.y -= 1.0f;
-		if (m_rotate.y < 0.0f)//0°よりは下がらない
-			m_rotate.y = 0.0f;
+		if (m_rotate.y < -90.0f)//-90°よりは下がらない
+			m_rotate.y = -90.0f;
 	}
 
 	if (IsKeyPress('D'))//Dキーで右に回転
 	{
 		m_rotate.y += 1.0f;
-		if (m_rotate.y > 180.0f)//180°以上にはならない
-			m_rotate.y = 180.0f;
+		if (m_rotate.y > 90.0f)//90°以上にはならない
+			m_rotate.y = 90.0f;
 	}
 
 	if (IsKeyPress('W'))//Wキーで上を向く
@@ -202,9 +202,9 @@ void Player::UpdateAngle()
 			m_angle = 0.0f;
 	}
 	//極座標の球
-	basePos.x = (m_pos.x + sinf(DirectX::XMConvertToRadians(90.0f - m_angle)) * cosf(DirectX::XMConvertToRadians(m_rotate.y)) * 2.0f) * -1;
+	basePos.x = (m_pos.x + sinf(DirectX::XMConvertToRadians(90.0f - m_angle)) * cosf(DirectX::XMConvertToRadians(m_rotate.y + 90.0f)) * 2.0f) * -1;
 	basePos.y = m_pos.y + cosf(DirectX::XMConvertToRadians(90.0f - m_angle)) * 2.0f;
-	basePos.z = m_pos.z + sinf(DirectX::XMConvertToRadians(90.0f - m_angle)) * sinf(DirectX::XMConvertToRadians(m_rotate.y)) * 2.0f;
+	basePos.z = m_pos.z + sinf(DirectX::XMConvertToRadians(90.0f - m_angle)) * sinf(DirectX::XMConvertToRadians(m_rotate.y + 90.0f)) * 2.0f;
 
 }
 
