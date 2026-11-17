@@ -63,18 +63,18 @@ void ForcusPoint::SetCamera(Camera* fCamera)
 
 void ForcusPoint::Draw()
 {
-	DirectX::XMMATRIX bT = DirectX::XMMatrixTranslation(m_pos.x, m_pos.y, m_pos.z);
-	DirectX::XMMATRIX bS = DirectX::XMMatrixScaling(0.4f, 0.4f, 0.4f);
-	DirectX::XMMATRIX bmat = bS * bT;
+	//DirectX::XMMATRIX bT = DirectX::XMMatrixTranslation(m_pos.x, m_pos.y, m_pos.z);
+	//DirectX::XMMATRIX bS = DirectX::XMMatrixScaling(0.4f, 0.4f, 0.4f);
+	//DirectX::XMMATRIX bmat = bS * bT;
 
-	//•ÏŠ·s—ñ‚ğGPU‚É“n‚·‚½‚ß‚Ì‘Oˆ—
-	bmat = DirectX::XMMatrixTranspose(bmat);
-	DirectX::XMFLOAT4X4 fbMat;
-	DirectX::XMStoreFloat4x4(&fbMat, bmat);
+	////•ÏŠ·s—ñ‚ğGPU‚É“n‚·‚½‚ß‚Ì‘Oˆ—
+	//bmat = DirectX::XMMatrixTranspose(bmat);
+	//DirectX::XMFLOAT4X4 fbMat;
+	//DirectX::XMStoreFloat4x4(&fbMat, bmat);
 
-	//•`‰æˆ—
-	Geometory::SetWorld(fbMat);
-	Geometory::DrawBox();
+	////•`‰æˆ—
+	//Geometory::SetWorld(fbMat);
+	//Geometory::DrawBox();
 }
 
 DirectX::XMFLOAT3 ForcusPoint::GetPos()
