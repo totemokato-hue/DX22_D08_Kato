@@ -5,7 +5,6 @@
 //==== コンストラクタ ====
 Ground::Ground()
 	:m_pModel(nullptr)
-	, m_pCamera(nullptr)
 	, m_pos(0.0f, 0.0f, 0.0f)
 	, m_scale(1.0f, 1.0f, 1.0f)
 {
@@ -81,12 +80,6 @@ void Ground::Draw()
 		}
 	}
 
-}
-
-//==== カメラの設定 ====
-void Ground::SetCamera(Camera* pCamera)
-{
-	m_pCamera = pCamera;
 }
 
 //==== 座標の設定 ====

@@ -7,7 +7,6 @@ class Ground {
 
 private:
 	Model* m_pModel;    //ƒ‚ƒfƒ‹î•ñ
-	Camera* m_pCamera;  //ƒJƒƒ‰î•ñ
 	DirectX::XMFLOAT3 m_pos;        //À•W
 	DirectX::XMFLOAT3 m_scale;      //Šg‘å—¦
 
@@ -20,8 +19,6 @@ public:
 
 	//•`‰æˆ—
 	void Draw();
-
-	void SetCamera(Camera* pCamera);
 
 	//İ’è
 	void SetPos(float x, float y, float z);

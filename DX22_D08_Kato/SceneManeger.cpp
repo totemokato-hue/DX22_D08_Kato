@@ -32,7 +32,6 @@ void SceneManeger::InitManeger()
 	m_pPowerGauge->SetPlayer(m_pPlayer);
 	CameraPlayer* pCamera = new CameraPlayer();
 	m_pPlayer->SetCamera(pCamera);//‹…‚ð‘Å‚¿o‚·‚½‚ß‚ÌƒJƒƒ‰‚ðÝ’è
-	m_pGround->SetCamera(pCamera);
 	pCamera->SetPlayer(m_pPlayer);
 	TopCamera* tCamera = new TopCamera();
 	fPoint = new ForcusPoint();
