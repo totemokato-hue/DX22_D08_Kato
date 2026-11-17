@@ -15,6 +15,7 @@ private:
 	DirectX::XMFLOAT3 m_oldmove;//プレイヤー過去移動量
 	DirectX::XMFLOAT3 m_rotate;//プレイヤー回転量
 	DirectX::XMFLOAT3 basePos;//プレイヤーを飛ばす場所の基準
+	float				m_tilt;//プレイヤー傾き
 	float				m_angle;//プレイヤー角度
 	bool				m_isStop;//プレイヤーの停止判定
 	bool				m_isGround;//地面接地判定

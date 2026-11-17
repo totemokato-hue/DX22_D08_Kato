@@ -20,6 +20,7 @@ Player::Player()
 	, m_move( 0.0f,0.0f,0.0f )
 	, m_oldmove( 0.0f,0.0f,0.0f )
 	, m_rotate( 0.0f,0.0f,0.0f )
+	, m_tilt(0.0f)
 	, basePos( 0.0f,0.0f,0.0f )
 	, m_angle(0.0f)
 	, m_time(0.0f)
@@ -145,6 +146,7 @@ void Player::initialize()
 	m_oldmove = { 0.0f, 0.0f, 0.0f };
 	m_rotate = { 0.0f, 0.0f, 0.0f };
 	basePos = { 0.0f, 0.0f, 0.0f };
+	m_tilt = 0.0f;
 	m_angle = 0.0f;
 	m_time = 0.0f;
 	m_isStop = true;
