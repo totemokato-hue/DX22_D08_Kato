@@ -207,6 +207,11 @@ void SceneManeger::DrawManeger()
 	m_pGoal->Draw();
 	m_pPlayer->Draw();
 
+	// 射撃モード中のみ予測線を表示
+	if (m_nScene == ShotMode)
+	{
+		m_pPlayer->DrawPrediction();
+	}
 	//UIは最後に表示する
 	if (m_nScene == ShotMode)
 	{

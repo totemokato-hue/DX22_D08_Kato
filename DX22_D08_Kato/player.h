@@ -34,6 +34,9 @@ public:
 	//描画処理
 	void Draw();
 
+	// 予測線の描画
+	void DrawPrediction();
+
 	void initialize();
 
 	void SetCamera(Camera* pCamera);
@@ -49,4 +52,10 @@ public:
 	//座標設定
 	void SetPos(float x, float y, float z);
 	/*void SetScale(float x, float y, float z);*/
+private:
+	// 発射時の初速度を計算
+	DirectX::XMFLOAT3 GetShotVelocity(float power) const;
+
+	// 放物線の座標を計算
+	std::vector<DirectX::XMFLOAT3> CalculatePredictionPoints() const;
 };

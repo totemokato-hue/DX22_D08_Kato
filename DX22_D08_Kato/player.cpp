@@ -16,13 +16,13 @@ enum eShotStep
 Player::Player()
 	: m_pCamera(nullptr)
 	, m_pModel(nullptr)
-	, m_pos ( 0.0f,0.0f,0.0f )
+	, m_pos ( 0.0f,1.0f,0.0f )
 	, m_move( 0.0f,0.0f,0.0f )
 	, m_oldmove( 0.0f,0.0f,0.0f )
 	, m_rotate( 0.0f,0.0f,0.0f )
 	, m_tilt(0.0f)
 	, basePos( 0.0f,0.0f,0.0f )
-	, m_angle(0.0f)
+	, m_angle(20.0f)
 	, m_time(0.0f)
 	, m_isStop(true)
 	, m_isGround(true)
@@ -134,20 +134,53 @@ void Player::Draw()
 
 	//描画処理
 	Geometory::SetWorld(fbMat);
-	Geometory::DrawBox();
+	//Geometory::DrawBox();
 
 
 }
 
+void Player::DrawPrediction()
+{
+	// 放物線上の座標を取得
+	const auto points = CalculatePredictionPoints();
+
+	// 描画できる座標がない場合
+	if (points.size() < 2)
+	{
+		return;
+	}
+
+	// 予測線の色（水色）
+	const DirectX::XMFLOAT4 lineColor(
+		1.0f,
+		0.0f,
+		1.0f,
+		1.0f
+	);
+
+	// 各座標を線でつなぐ
+	for (std::size_t i = 1; i < points.size(); ++i)
+	{
+		Geometory::AddLine(
+			points[i - 1],
+			points[i],
+			lineColor
+		);
+	}
+
+	// 線をまとめて描画
+	Geometory::DrawLines();
+}
+
 void Player::initialize()
 {
-	m_pos = { 0.0f, 0.0f, 0.0f };
+	m_pos = { 0.0f, 1.0f, 0.0f };
 	m_move = { 0.0f, 0.0f, 0.0f };
 	m_oldmove = { 0.0f, 0.0f, 0.0f };
 	m_rotate = { 0.0f, 0.0f, 0.0f };
 	basePos = { 0.0f, 0.0f, 0.0f };
 	m_tilt = 0.0f;
-	m_angle = 0.0f;
+	m_angle = 20.0f;
 	m_time = 0.0f;
 	m_isStop = true;
 	m_isGround = true;
@@ -288,4 +321,155 @@ void Player::SetPos(float x, float y, float z)
 	m_pos.x = x;
 	m_pos.y = y;
 	m_pos.z = z;
+}
+
+DirectX::XMFLOAT3 Player::GetShotVelocity(float power) const
+{
+	using namespace DirectX;
+
+	XMVECTOR start = XMLoadFloat3(&m_pos);
+	XMVECTOR target = XMLoadFloat3(&basePos);
+	XMVECTOR direction = XMVectorSubtract(target, start);
+
+	if (XMVectorGetX(XMVector3LengthSq(direction)) < 0.000001f)
+		return XMFLOAT3(0.0f, 0.0f, 0.0f);
+
+	direction = XMVectorScale(XMVector3Normalize(direction), power);
+	XMFLOAT3 velocity;
+	XMStoreFloat3(&velocity, direction);
+	return velocity;
+}
+
+std::vector<DirectX::XMFLOAT3> Player::CalculatePredictionPoints() const
+{
+	using namespace DirectX;
+
+	std::vector<XMFLOAT3> points;
+
+	// 角度調整中またはパワー調整中のみ表示
+	if (m_shotStep != SHOT_ANGLE &&
+		m_shotStep != SHOT_POWER)
+	{
+		return points;
+	}
+
+	// パワーを取得
+	// 角度調整中は最小パワー1.0
+	float power = 1.0f;
+
+	if (m_shotStep == SHOT_ANGLE)
+	{
+		power = 2.0f;
+	}
+	else if (m_shotStep == SHOT_POWER)
+	{
+		power = m_shotPower;
+	}
+
+	// 発射速度を取得
+	XMFLOAT3 velocity = GetShotVelocity(power);
+
+	// 速度が0なら処理しない
+	if (velocity.x * velocity.x +
+		velocity.y * velocity.y +
+		velocity.z * velocity.z < 0.000001f)
+	{
+		return points;
+	}
+
+	// 接地面の高さ
+	constexpr float groundY = 1.0f;
+
+	// UpdateMove()と同じ移動倍率
+	constexpr float delta = 0.1f;
+
+	// 予測線の最大フレーム数
+	constexpr int maxPreviewSteps = 80;
+
+	// パワーが強いほど表示する範囲を長くする
+	int previewSteps =
+		8 + static_cast<int>(power * 6.0f);
+
+	if (previewSteps > maxPreviewSteps)
+	{
+		previewSteps = maxPreviewSteps;
+	}
+
+	// ---------------------------
+	// 着地までのフレーム数を調べる
+	// ---------------------------
+
+	XMFLOAT3 testPos = m_pos;
+	XMFLOAT3 testVel = velocity;
+
+	int landingFrame = -1;
+
+	for (int frame = 1; frame <= 300; ++frame)
+	{
+		// 重力
+		testVel.y -= GRAVITY * delta;
+
+		// 移動
+		testPos.x += testVel.x * delta;
+		testPos.y += testVel.y * delta;
+		testPos.z += testVel.z * delta;
+
+		// 着地判定
+		if (testPos.y <= groundY)
+		{
+			landingFrame = frame;
+			break;
+		}
+	}
+
+	// 着地地点まで線を出さない
+	if (landingFrame >= 0)
+	{
+		// 着地までの約2/3を上限にする
+		int beforeLanding =
+			(landingFrame - 1) * 2 / 3;
+
+		if (beforeLanding < previewSteps)
+		{
+			previewSteps = beforeLanding;
+		}
+	}
+
+	if (previewSteps <= 0)
+	{
+		return points;
+	}
+
+	// ---------------------------
+	// 放物線上の座標を生成
+	// ---------------------------
+
+	points.reserve(previewSteps + 1);
+
+	XMFLOAT3 pos = m_pos;
+
+	// 最初の座標
+	points.push_back(pos);
+
+	for (int i = 0; i < previewSteps; ++i)
+	{
+		// 重力
+		velocity.y -= GRAVITY * delta;
+
+		// 座標更新
+		pos.x += velocity.x * delta;
+		pos.y += velocity.y * delta;
+		pos.z += velocity.z * delta;
+
+		// 接地面に達した場合は終了
+		if (pos.y <= groundY)
+		{
+			break;
+		}
+
+		// 予測した座標を保存
+		points.push_back(pos);
+	}
+
+	return points;
 }

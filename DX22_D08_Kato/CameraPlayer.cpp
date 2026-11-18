@@ -2,7 +2,7 @@
 #include "Input.h"
 
 CameraPlayer::CameraPlayer()
-	: m_radXZ(0.0f), m_radY(0.0f), m_radius(5.0f), m_pPlayer(nullptr)
+	: m_radXZ(0.0f), m_radY(0.3f), m_radius(5.0f), m_pPlayer(nullptr)
 {
 }
 
@@ -15,14 +15,14 @@ void CameraPlayer::Update()
 	//プレイヤーの位置を中止店として設定
 	m_look = m_pPlayer->GetPos();
 
-	//if (IsKeyPress('A'))
-	//{
-	//	m_radXZ += 0.1;
-	//}
-	//if (IsKeyPress('D'))
-	//{
-	//	m_radXZ -= 0.1;
-	//}
+	if (IsKeyPress(VK_LEFT))
+	{
+		m_radXZ += 0.01;
+	}
+	if (IsKeyPress(VK_RIGHT))
+	{
+		m_radXZ -= 0.01;
+	}
 	//if (IsKeyPress('W'))
 	//{
 	//	m_radY += 0.1;
