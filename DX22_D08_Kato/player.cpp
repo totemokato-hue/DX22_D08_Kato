@@ -78,6 +78,10 @@ void Player::Draw()
 		DirectX::XMMATRIX Ry = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(m_rotate.y));
 		DirectX::XMMATRIX Rz = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(m_rotate.z));
 		DirectX::XMMATRIX R = Rx * Ry * Rz; //回転行列のみをかけ合わせて格納
+		DirectX::XMMATRIX Tilt = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(m_tilt));
+
+		R = Tilt * R;//プレイヤーを基準に傾ける
+
 		DirectX::XMMATRIX S = DirectX::XMMatrixScaling(1.0f, 2.0f, 1.0f);
 		//DirectX::XMMATRIX mat = S * R * T;
 		World = S * R * T;
@@ -293,11 +297,11 @@ void Player::UpdateMove()
 
 	if (m_move.y > 0.0f)
 	{
-		
+		m_tilt = 90.0f - m_angle;
 	}
 	else
 	{
-		
+		m_tilt = m_angle - 90.0f;
 	}
 	
 
