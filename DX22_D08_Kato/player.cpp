@@ -279,7 +279,7 @@ void Player::UpdateShot()
 	//打ち出し後の情報を設定
 	m_isStop = false;		//移動するので停止状態解除
 	m_isGround = false;		//飛ぶので一旦地面から離れたとみなす
-	m_shotStep = SHOT_MOVE;	//キー入力待ちの手順に戻す
+	m_shotStep = SHOT_MOVE;	//ステートの変更
 
 }
 
