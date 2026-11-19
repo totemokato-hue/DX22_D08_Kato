@@ -2,7 +2,7 @@
 #include "Input.h"
 
 CameraPlayer::CameraPlayer()
-	: m_radXZ(0.0f), m_radY(0.3f), m_radius(5.0f), m_pPlayer(nullptr)
+	: m_radXZ(0.0f), m_radY(0.4f), m_radius(8.0f), m_pPlayer(nullptr)
 {
 }
 

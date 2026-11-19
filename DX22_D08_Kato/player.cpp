@@ -269,13 +269,9 @@ void Player::UpdatePower()
 
 void Player::UpdateShot()
 {
-	DirectX::XMVECTOR vBasePos = DirectX::XMLoadFloat3(&basePos);
-	DirectX::XMVECTOR vPos = DirectX::XMLoadFloat3(&m_pos);
-	DirectX::XMVECTOR vec = DirectX::XMVectorSubtract(vBasePos, vPos);
-	vec = DirectX::XMVector3Normalize(vec);
-	vec = DirectX::XMVectorScale(vec, m_shotPower);
-	DirectX::XMStoreFloat3(&m_move, vec);
-
+	// 発射速度を計算
+	m_move = GetShotVelocity(m_shotPower);
+	
 	//打ち出し後の情報を設定
 	m_isStop = false;		//移動するので停止状態解除
 	m_isGround = false;		//飛ぶので一旦地面から離れたとみなす
