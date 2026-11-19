@@ -7,9 +7,10 @@ SceneManeger::SceneManeger()
 	, m_pModel(nullptr)
 	, m_pPlayer(nullptr)
 	, m_pPowerGauge(nullptr)
-	,fPoint(nullptr)
-	,m_tCamera(nullptr)
-	,pUIDepthState(nullptr)
+	, fPoint(nullptr)
+	, m_tCamera(nullptr)
+	, pUIDepthState(nullptr)
+	, m_pWall(nullptr)
 {
 
 }
@@ -41,6 +42,10 @@ void SceneManeger::InitManeger()
 	fPoint->SetCamera(tCamera);//トップカメラの設定
 	tCamera->SetForcus(fPoint);
 	m_tCamera = tCamera;
+	m_pWall = new Wall();
+	m_pWall->SetPos(0.0f,0.0f,0.0f);
+	m_pWall->SetScale(10.0f,4.0f,1.0f);
+
 	// UI用深度テストを初期化
 	UIDepthInit();
 }
@@ -85,6 +90,11 @@ void SceneManeger::Destructor()
 	if (fPoint) {
 		delete fPoint;
 		fPoint = nullptr;
+	}
+
+	if (m_pWall) {
+		delete m_pWall;
+		m_pWall = nullptr;
 	}
 }
 
@@ -132,6 +142,7 @@ void SceneManeger::UpdateManeger()
 		m_pGoal->Update();
 		m_pPlayer->Update();
 		m_pCamera->Update();
+		m_pWall->Update();
 		
 		break;
 		
@@ -206,6 +217,7 @@ void SceneManeger::DrawManeger()
 	m_pGround->Draw();
 	m_pGoal->Draw();
 	m_pPlayer->Draw();
+	m_pWall->Draw();
 
 	// 射撃モード中のみ予測線を表示
 	if (m_nScene == ShotMode)
