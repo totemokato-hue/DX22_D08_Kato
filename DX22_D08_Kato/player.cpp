@@ -17,6 +17,7 @@ Player::Player()
 	: m_pCamera(nullptr)
 	, m_pModel(nullptr)
 	, m_pos ( 0.0f,1.0f,0.0f )
+	, m_hitpos ( 0.0f,1.0f,0.0f )
 	, m_move( 0.0f,0.0f,0.0f )
 	, m_oldmove( 0.0f,0.0f,0.0f )
 	, m_rotate( 0.0f,0.0f,0.0f )
@@ -25,10 +26,11 @@ Player::Player()
 	, m_angle(20.0f)
 	, m_time(0.0f)
 	, m_isStop(true)
-	, m_isGround(true)
+	, m_isHit(false)
 	, m_shotStep(1)
 	, m_shotPower(0.0f)
 	, plus(true)
+	, m_collision{DirectX::XMFLOAT3(0.0f,1.0f,-6.0f),DirectX::XMFLOAT3(1.0f,1.0f,1.0f) }
 {
 	m_pModel = new Model();
 
@@ -61,6 +63,8 @@ void Player::Update()
 	case SHOT_SHOT:		UpdateShot(); break;
 	case SHOT_MOVE:		UpdateMove(); break;
 	}
+
+	
 
 
 }
@@ -179,6 +183,7 @@ void Player::DrawPrediction()
 void Player::initialize()
 {
 	m_pos = { 0.0f, 1.0f, 0.0f };
+	m_hitpos = { 0.0f, 1.0f, 0.0f };
 	m_move = { 0.0f, 0.0f, 0.0f };
 	m_oldmove = { 0.0f, 0.0f, 0.0f };
 	m_rotate = { 0.0f, 0.0f, 0.0f };
@@ -187,11 +192,12 @@ void Player::initialize()
 	m_angle = 20.0f;
 	m_time = 0.0f;
 	m_isStop = true;
-	m_isGround = true;
+	m_isHit = false;
 	m_shotStep = SHOT_ANGLE;
 	m_shotPower = 0.0f;
 	plus = true;
 	Player::SetPos(0.0f, 1.0f, -6.0f);
+	m_collision = { DirectX::XMFLOAT3(0.0f,1.0f,-6.0f),DirectX::XMFLOAT3(1.0f,1.0f,1.0f) };
 }
 
 void Player::SetCamera(Camera* pCamera)
@@ -274,33 +280,35 @@ void Player::UpdateShot()
 	
 	//打ち出し後の情報を設定
 	m_isStop = false;		//移動するので停止状態解除
-	m_isGround = false;		//飛ぶので一旦地面から離れたとみなす
+	m_isHit = false;		//飛ぶので一旦地面から離れたとみなす
 	m_shotStep = SHOT_MOVE;	//ステートの変更
 
 }
 
 void Player::UpdateMove()
 {
-	//過去移動量を保存
-	m_oldmove = m_move;
-
-	//重力
-	m_move.y -= GRAVITY * 0.1;
-	//移動処理
-	m_pos.x += m_move.x / 10.0f;
-	m_pos.y += m_move.y / 10.0f;
-	m_pos.z += m_move.z / 10.0f;
-
-	if (m_move.y > 0.0f)
+	if (!m_isHit)
 	{
-		m_tilt = 90.0f - m_angle;
-	}
-	else
-	{
-		m_tilt = m_angle - 90.0f;
-	}
-	
+		//過去移動量を保存
+		m_oldmove = m_move;
 
+		//重力
+		m_move.y -= GRAVITY * 0.1;
+		//移動処理
+		m_pos.x += m_move.x / 10.0f;
+		m_pos.y += m_move.y / 10.0f;
+		m_pos.z += m_move.z / 10.0f;
+
+		if (m_move.y > 0.0f)
+		{
+			m_tilt = 90.0f - m_angle;
+		}
+		else
+		{
+			m_tilt = m_angle - 90.0f;
+		}
+
+	}
 
 	//地面接触判定
 	if (m_pos.y < 1.0f)
@@ -308,12 +316,26 @@ void Player::UpdateMove()
 		m_pos.y = 1.0f;
 
 		m_move = { 0.0f,0.0f,0.0f };
+		Hit();
 	}
+
+	//移動処理が終わった後で、当たり判定の位置も更新する
+	m_collision.center = m_pos;
 
 	if (IsKeyTrigger(VK_ESCAPE))
 	{
 		Player::initialize();
 	}
+}
+
+void Player::Hit()
+{
+	m_isHit = true;
+
+	m_hitpos = m_pos;
+
+
+
 }
 
 void Player::SetPos(float x, float y, float z)

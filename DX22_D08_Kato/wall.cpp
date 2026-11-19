@@ -6,6 +6,7 @@ Wall::Wall()
 	:m_pModel(nullptr)
 	, m_pos(0.0f, 0.0f, 0.0f)
 	, m_scale(1.0f, 1.0f, 1.0f)
+	, m_collision{DirectX::XMFLOAT3(0.0f,0.0f,0.0f),DirectX::XMFLOAT3(1.0f,1.0f,1.0f) }
 {
 }
 
@@ -39,6 +40,10 @@ void Wall::SetPos(float x, float y, float z)
 	m_pos.x = x;
 	m_pos.y = y;
 	m_pos.z = z;
+
+	m_collision.center.x = x;
+	m_collision.center.y = y;
+	m_collision.center.z = z;
 }
 
 void Wall::SetScale(float x, float y, float z)
@@ -46,4 +51,8 @@ void Wall::SetScale(float x, float y, float z)
 	m_scale.x = x;
 	m_scale.y = y;
 	m_scale.z = z;
+
+	m_collision.size.x = 1.0f * x;
+	m_collision.size.y = 1.0f * y;
+	m_collision.size.z = 1.0f * z;
 }

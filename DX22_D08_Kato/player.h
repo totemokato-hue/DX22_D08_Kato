@@ -5,12 +5,14 @@
 #include "MeshBuffer.h"
 #include "Model.h"
 #include "camera.h"
+#include "Collision.h"
 
 class Player {
 private:
 	Model* m_pModel;//モデル情報
 	Camera* m_pCamera;//ボールを追いかけるカメラの情報
 	DirectX::XMFLOAT3 m_pos; //座標  
+	DirectX::XMFLOAT3 m_hitpos; //ヒット座標  
 	DirectX::XMFLOAT3 m_move;//プレイヤー移動量
 	DirectX::XMFLOAT3 m_oldmove;//プレイヤー過去移動量
 	DirectX::XMFLOAT3 m_rotate;//プレイヤー回転量
@@ -18,12 +20,14 @@ private:
 	float				m_tilt;//プレイヤー傾き
 	float				m_angle;//プレイヤー角度
 	bool				m_isStop;//プレイヤーの停止判定
-	bool				m_isGround;//地面接地判定
+	bool				m_isHit;//地面接地判定
 	int					m_shotStep;//プレイヤーの処理手順
 	float				m_shotPower;//プレイヤーの打ち出し強さ
 	/*float m_Scale[3];*/
 	float m_time; //経過時間
 	bool plus;
+	Collision::Box m_collision;//ボックスの当たり判定
+
 public:
 	Player();
 	~Player();
@@ -49,8 +53,13 @@ public:
 	void UpdateShot();
 	void UpdateMove();
 
+	void Hit();
+
 	//座標設定
 	void SetPos(float x, float y, float z);
+
+	//当たり判定の取得
+	const Collision::Box& GetCollisionBox() { return m_collision; }
 	/*void SetScale(float x, float y, float z);*/
 private:
 	// 発射時の初速度を計算

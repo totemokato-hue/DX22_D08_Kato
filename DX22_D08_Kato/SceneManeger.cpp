@@ -170,6 +170,17 @@ void SceneManeger::UpdateManeger()
 		m_pPowerGauge->Update();
 	}
 
+	//‚»‚ê‚¼‚ê‚Ì“–‚½‚è”»’è‚ðŽæ“¾
+	Collision::Box playerCollision = m_pPlayer->GetCollisionBox();
+	Collision::Box wallCollision = m_pWall->GetCollisionBox();
+
+	//“–‚½‚è”»’è‚ð‚à‚Æ‚ÉÕ“Ë”»’è‚ðŽÀŽ{
+	Collision::Result result = Collision::Hit(playerCollision, wallCollision);
+
+	if (result.isHit) {
+		m_pPlayer->Hit();
+	}
+
 
 }
 

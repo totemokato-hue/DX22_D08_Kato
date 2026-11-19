@@ -2,12 +2,14 @@
 #include <DirectXMath.h>
 #include "Model.h""
 #include "Camera.h"
+#include "Collision.h"
 
 class Wall {
 private:
 	Model* m_pModel;    //モデル情報
 	DirectX::XMFLOAT3 m_pos;        //座標
 	DirectX::XMFLOAT3 m_scale;      //拡大率
+	Collision::Box m_collision;		//ボックスの当たり判定情報
 
 public:
 	Wall();
@@ -25,4 +27,7 @@ public:
 
 	//座標取得
 	DirectX::XMFLOAT3 GetPos();
+
+	//当たり判定の取得
+	const Collision::Box& GetCollisionBox() { return m_collision; }
 };
