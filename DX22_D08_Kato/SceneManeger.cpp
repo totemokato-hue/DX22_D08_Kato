@@ -9,6 +9,8 @@ SceneManeger::SceneManeger()
 	, m_pPowerGauge(nullptr)
 	, fPoint(nullptr)
 	, m_tCamera(nullptr)
+	, m_pPlayerCamera(nullptr)
+	, m_pFollowCamera(nullptr)
 	, pUIDepthState(nullptr)
 	, m_pWall(nullptr)
 {
@@ -19,32 +21,54 @@ SceneManeger::~SceneManeger()
 {
 }
 
+// 初期化
 void SceneManeger::InitManeger()
 {
 	m_pGround = new Ground;
 	m_pGround->SetPos(0.0f, -0.2f, 0.0f);
 	m_pGround->SetScale(10.0f, 0.4f, 20.0f);
+
 	m_pGoal = new Goal;
 	m_pGoal->SetPos(0.0f, 1.0f, 6.0f);
-	/*m_pCamera = new CameraDebug;*/
+
 	m_pPlayer = new Player;
 	m_pPlayer->SetPos(0.0f, 1.0f, -6.0f);
+
 	m_pPowerGauge = new PowerGauge;
 	m_pPowerGauge->SetPlayer(m_pPlayer);
-	CameraPlayer* pCamera = new CameraPlayer();
-	m_pPlayer->SetCamera(pCamera);//球を打ち出すためのカメラを設定
-	pCamera->SetPlayer(m_pPlayer);
+
+	//==================================================
+	// 発射前のカメラ
+	//==================================================
+	m_pPlayerCamera = new CameraPlayer();
+	m_pPlayerCamera->SetPlayer(m_pPlayer);
+	m_pPlayer->SetCamera(m_pPlayerCamera);
+
+	//==================================================
+	// 発射後のカメラ
+	//==================================================
+	m_pFollowCamera = new CameraFollow();
+	m_pFollowCamera->SetPlayer(m_pPlayer);
+
+	// 最初に使用するカメラ
+	m_pCamera = m_pPlayerCamera;
+
+	//==================================================
+	// トップカメラ
+	//==================================================
 	TopCamera* tCamera = new TopCamera();
 	fPoint = new ForcusPoint();
 
-	m_pCamera = pCamera;
-
-	fPoint->SetCamera(tCamera);//トップカメラの設定
+	fPoint->SetCamera(tCamera);
 	tCamera->SetForcus(fPoint);
 	m_tCamera = tCamera;
+
+	//==================================================
+	// 壁
+	//==================================================
 	m_pWall = new Wall();
-	m_pWall->SetPos(0.0f,0.0f,0.0f);
-	m_pWall->SetScale(10.0f,4.0f,1.0f);
+	m_pWall->SetPos(0.0f, 0.0f, 0.0f);
+	m_pWall->SetScale(10.0f, 4.0f, 1.0f);
 
 	// UI用深度テストを初期化
 	UIDepthInit();
@@ -62,10 +86,22 @@ void SceneManeger::Destructor()
 		m_pGoal = nullptr;
 	}
 
-	if (m_pCamera) {
-		delete m_pCamera;
-		m_pCamera = nullptr;
+	// 発射前のカメラ
+	if (m_pPlayerCamera)
+	{
+		delete m_pPlayerCamera;
+		m_pPlayerCamera = nullptr;
 	}
+
+	// 発射後のカメラ
+	if (m_pFollowCamera)
+	{
+		delete m_pFollowCamera;
+		m_pFollowCamera = nullptr;
+	}
+
+	// 現在使用中のカメラ
+	m_pCamera = nullptr;
 
 	if (m_pPlayer)
 	{
@@ -141,9 +177,33 @@ void SceneManeger::UpdateManeger()
 		m_pGround->Update();
 		m_pGoal->Update();
 		m_pPlayer->Update();
+
+		// 発射後は追従カメラに切り替える
+		if (m_pPlayer->IsFlying())
+		{
+			m_isFollowCamera = true;
+		}
+
+		// 発射前の状態に戻ったら通常カメラに戻す
+		if (m_pPlayer->IsAiming())
+		{
+			m_isFollowCamera = false;
+		}
+
+		// 使用するカメラを選択
+		if (m_isFollowCamera)
+		{
+			m_pCamera = m_pFollowCamera;
+		}
+		else
+		{
+			m_pCamera = m_pPlayerCamera;
+		}
+
+		// 選択したカメラを更新
 		m_pCamera->Update();
+
 		m_pWall->Update();
-		
 		break;
 		
 	}
