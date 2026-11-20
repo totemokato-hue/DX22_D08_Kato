@@ -11,6 +11,7 @@ SceneManeger::SceneManeger()
 	, m_tCamera(nullptr)
 	, pUIDepthState(nullptr)
 	, m_pWall(nullptr)
+	, m_pEnemy(nullptr)
 {
 
 }
@@ -31,6 +32,11 @@ void SceneManeger::InitManeger()
 	m_pPlayer->SetPos(0.0f, 1.0f, -6.0f);
 	m_pPowerGauge = new PowerGauge;
 	m_pPowerGauge->SetPlayer(m_pPlayer);
+	// 敵の生成
+	m_pEnemy = new Enemy();
+	m_pEnemy->SetPos(5.0f, 1.0f, 20.0f);
+	m_pEnemy->SetScale(1.0f, 2.0f, 1.0f);
+
 	CameraPlayer* pCamera = new CameraPlayer();
 	m_pPlayer->SetCamera(pCamera);//球を打ち出すためのカメラを設定
 	pCamera->SetPlayer(m_pPlayer);
@@ -52,17 +58,20 @@ void SceneManeger::InitManeger()
 
 void SceneManeger::Destructor()
 {
-	if (m_pGround) {
+	if (m_pGround) 
+	{
 		delete m_pGround;
 		m_pGround = nullptr;
 	}
 
-	if (m_pGoal) {
+	if (m_pGoal) 
+	{
 		delete m_pGoal;
 		m_pGoal = nullptr;
 	}
 
-	if (m_pCamera) {
+	if (m_pCamera)
+	{
 		delete m_pCamera;
 		m_pCamera = nullptr;
 	}
@@ -73,7 +82,8 @@ void SceneManeger::Destructor()
 		m_pPlayer = nullptr;
 	}
 
-	if (m_pPowerGauge) {
+	if (m_pPowerGauge) 
+	{
 		delete m_pPowerGauge;
 		m_pPowerGauge = nullptr;
 	}
@@ -83,18 +93,29 @@ void SceneManeger::Destructor()
 		pUIDepthState->Release();
 		pUIDepthState = nullptr;
 	}
-	if (m_tCamera) {
+
+	if (m_tCamera) 
+	{
 		delete m_tCamera;
 		m_tCamera = nullptr;
 	}
-	if (fPoint) {
+
+	if (fPoint) 
+	{
 		delete fPoint;
 		fPoint = nullptr;
 	}
 
-	if (m_pWall) {
+	if (m_pWall)
+	{
 		delete m_pWall;
 		m_pWall = nullptr;
+	}
+
+	if (m_pEnemy)
+	{
+		delete m_pEnemy;
+		m_pEnemy = nullptr;
 	}
 }
 
@@ -146,6 +167,28 @@ void SceneManeger::UpdateManeger()
 		
 		break;
 		
+	}
+
+	// 敵の更新
+	if (m_pEnemy && m_pEnemy->IsAlive())
+	{
+		m_pEnemy->Update();
+
+		// プレイヤーと敵の当たり判定
+		Collision::Box playerCollision =
+			m_pPlayer->GetCollisionBox();
+
+		Collision::Box enemyCollision =
+			m_pEnemy->GetCollisionBox();
+
+		Collision::Result result =
+			Collision::Hit(playerCollision, enemyCollision);
+
+		if (result.isHit)
+		{
+			// 敵を消す
+			m_pEnemy->Hit();
+		}
 	}
 	
 	//トップカメラの切り替え
@@ -230,6 +273,12 @@ void SceneManeger::DrawManeger()
 	m_pPlayer->Draw();
 	m_pWall->Draw();
 
+	//当たったら消えるもの
+	if (m_pEnemy)
+	{
+		m_pEnemy->Draw();
+	}
+
 	// 射撃モード中のみ予測線を表示
 	if (m_nScene == ShotMode)
 	{
@@ -239,6 +288,15 @@ void SceneManeger::DrawManeger()
 	if (m_nScene == ShotMode)
 	{
 		UIDraw();
+	}
+
+	// リセット
+	if (IsKeyTrigger(VK_ESCAPE))
+	{
+		if (m_pEnemy)
+		{
+			m_pEnemy->Reset();
+		}
 	}
 }
 

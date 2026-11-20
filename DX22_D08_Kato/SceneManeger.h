@@ -11,6 +11,8 @@
 #include "CameraDebug.h"
 #include "CameraPlayer.h"
 #include "wall.h"
+#include "Enemy.h"
+
 #pragma once
 enum SceneState
 {
@@ -47,6 +49,7 @@ private:
 	PowerGauge* m_pPowerGauge;				// パワーゲージのポインタ
 	ID3D11DepthStencilState* pUIDepthState; // UI用深度テストの設定のポインタ
 	Wall* m_pWall;//壁オブジェクト
+	Enemy* m_pEnemy; // 敵オブジェクト
 
 	//==================================================
 	// メンバ関数
