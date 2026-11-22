@@ -1,5 +1,6 @@
 #pragma once
 
+//＝＝＝インクルード＝＝＝
 #include "Ground.h"
 #include "Scene.h"
 #include "Goal.h"
@@ -15,7 +16,8 @@
 #include "wall.h"
 #include "Enemy.h"
 
-#pragma once
+//＝＝＝列挙型＝＝＝
+// 操作モード
 enum SceneState
 {
 	F_CameraMode,
@@ -25,20 +27,36 @@ enum SceneState
 
 };
 
+// シーン
+enum SceneType
+{
+	TITLE,	// タイトル
+	GAME,	// ゲーム
+	CLEAR,	// ゲームクリア（リザルト）
+	OVER	// ゲームオーバー
+};
+
+//＝＝＝クラス定義＝＝＝
 class SceneManeger
 {
 public:
-
+	//==================================================
+	// コンストラクタ・デストラクタ
+	//==================================================
 	SceneManeger();
 	~SceneManeger();
-	void InitManeger();
-	void Destructor();
-	void UpdateManeger();
-	void DrawManeger();
+
+	//==================================================
+	// メンバー関数
+	//==================================================
+	void InitManeger();		// 初期化
+	void Destructor();		// デストラクタ（実質）
+	void UpdateManeger();	// 更新処理
+	void DrawManeger();		// 描画
 
 private:
 	//==================================================
-	// メンバ変数
+	// メンバー変数
 	//==================================================
 	bool m_isFollowCamera = false;			// 追従カメラのフラグ
 	int m_nScene = ShotMode;				// シーン
@@ -53,8 +71,8 @@ private:
 	CameraFollow* m_pFollowCamera;			// 発射後のカメラ
 	PowerGauge* m_pPowerGauge;				// パワーゲージのポインタ
 	ID3D11DepthStencilState* pUIDepthState; // UI用深度テストの設定のポインタ
-	Wall* m_pWall;//壁オブジェクト
-	Enemy* m_pEnemy; // 敵オブジェクト
+	Wall* m_pWall;							// 壁オブジェクト
+	Enemy* m_pEnemy;						// 敵オブジェクト
 
 	//==================================================
 	// メンバ関数
