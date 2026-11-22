@@ -151,6 +151,7 @@
     <ClCompile Include="DirectX.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="ForcusPoint.cpp" />
+    <ClCompile Include="GameManeger.cpp" />
     <ClCompile Include="Geometory.cpp" />
     <ClCompile Include="Goal.cpp" />
     <ClCompile Include="Ground.cpp" />
@@ -183,6 +184,7 @@
     <ClInclude Include="DirectX.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="ForcusPoint.h" />
+    <ClInclude Include="GameManeger.h" />
     <ClInclude Include="Geometory.h" />
     <ClInclude Include="Goal.h" />
     <ClInclude Include="Ground.h" />
