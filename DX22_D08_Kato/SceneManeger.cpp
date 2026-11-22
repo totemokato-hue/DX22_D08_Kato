@@ -13,6 +13,7 @@ SceneManeger::SceneManeger()
 	, m_pFollowCamera(nullptr)
 	, pUIDepthState(nullptr)
 	, m_pWall(nullptr)
+	, m_pEnemy(nullptr)
 {
 
 }
@@ -36,26 +37,9 @@ void SceneManeger::InitManeger()
 
 	m_pPowerGauge = new PowerGauge;
 	m_pPowerGauge->SetPlayer(m_pPlayer);
-
-	//==================================================
-	// 発射前のカメラ
-	//==================================================
-	m_pPlayerCamera = new CameraPlayer();
-	m_pPlayerCamera->SetPlayer(m_pPlayer);
-	m_pPlayer->SetCamera(m_pPlayerCamera);
-
-	//==================================================
-	// 発射後のカメラ
-	//==================================================
-	m_pFollowCamera = new CameraFollow();
-	m_pFollowCamera->SetPlayer(m_pPlayer);
-
-	// 最初に使用するカメラ
-	m_pCamera = m_pPlayerCamera;
-
-	//==================================================
-	// トップカメラ
-	//==================================================
+	CameraPlayer* pCamera = new CameraPlayer();
+	m_pPlayer->SetCamera(pCamera);//球を打ち出すためのカメラを設定
+	pCamera->SetPlayer(m_pPlayer);
 	TopCamera* tCamera = new TopCamera();
 	fPoint = new ForcusPoint();
 
@@ -76,28 +60,21 @@ void SceneManeger::InitManeger()
 
 void SceneManeger::Destructor()
 {
-	if (m_pGround) {
+	if (m_pGround) 
+	{
 		delete m_pGround;
 		m_pGround = nullptr;
 	}
 
-	if (m_pGoal) {
+	if (m_pGoal) 
+	{
 		delete m_pGoal;
 		m_pGoal = nullptr;
 	}
 
-	// 発射前のカメラ
-	if (m_pPlayerCamera)
-	{
-		delete m_pPlayerCamera;
-		m_pPlayerCamera = nullptr;
-	}
-
-	// 発射後のカメラ
-	if (m_pFollowCamera)
-	{
-		delete m_pFollowCamera;
-		m_pFollowCamera = nullptr;
+	if (m_pCamera) {
+		delete m_pCamera;
+		m_pCamera = nullptr;
 	}
 
 	// 現在使用中のカメラ
@@ -109,7 +86,8 @@ void SceneManeger::Destructor()
 		m_pPlayer = nullptr;
 	}
 
-	if (m_pPowerGauge) {
+	if (m_pPowerGauge) 
+	{
 		delete m_pPowerGauge;
 		m_pPowerGauge = nullptr;
 	}
@@ -119,18 +97,29 @@ void SceneManeger::Destructor()
 		pUIDepthState->Release();
 		pUIDepthState = nullptr;
 	}
-	if (m_tCamera) {
+
+	if (m_tCamera) 
+	{
 		delete m_tCamera;
 		m_tCamera = nullptr;
 	}
-	if (fPoint) {
+
+	if (fPoint) 
+	{
 		delete fPoint;
 		fPoint = nullptr;
 	}
 
-	if (m_pWall) {
+	if (m_pWall)
+	{
 		delete m_pWall;
 		m_pWall = nullptr;
+	}
+
+	if (m_pEnemy)
+	{
+		delete m_pEnemy;
+		m_pEnemy = nullptr;
 	}
 }
 
@@ -206,6 +195,28 @@ void SceneManeger::UpdateManeger()
 		m_pWall->Update();
 		break;
 		
+	}
+
+	// 敵の更新
+	if (m_pEnemy && m_pEnemy->IsAlive())
+	{
+		m_pEnemy->Update();
+
+		// プレイヤーと敵の当たり判定
+		Collision::Box playerCollision =
+			m_pPlayer->GetCollisionBox();
+
+		Collision::Box enemyCollision =
+			m_pEnemy->GetCollisionBox();
+
+		Collision::Result result =
+			Collision::Hit(playerCollision, enemyCollision);
+
+		if (result.isHit)
+		{
+			// 敵を消す
+			m_pEnemy->Hit();
+		}
 	}
 	
 	//トップカメラの切り替え
@@ -290,6 +301,12 @@ void SceneManeger::DrawManeger()
 	m_pPlayer->Draw();
 	m_pWall->Draw();
 
+	//当たったら消えるもの
+	if (m_pEnemy)
+	{
+		m_pEnemy->Draw();
+	}
+
 	// 射撃モード中のみ予測線を表示
 	if (m_nScene == ShotMode)
 	{
@@ -299,6 +316,15 @@ void SceneManeger::DrawManeger()
 	if (m_nScene == ShotMode)
 	{
 		UIDraw();
+	}
+
+	// リセット
+	if (IsKeyTrigger(VK_ESCAPE))
+	{
+		if (m_pEnemy)
+		{
+			m_pEnemy->Reset();
+		}
 	}
 }
 
