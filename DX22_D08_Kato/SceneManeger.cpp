@@ -3,7 +3,9 @@
 
 // コンストラクタ
 SceneManeger::SceneManeger()
-	: m_pGround(nullptr)
+	: m_pGameManager(nullptr)
+	, m_pSceneResult(nullptr)
+	, m_pGround(nullptr)
 	, m_pGoal(nullptr)
 	, m_pCamera(nullptr)
 	, m_pModel(nullptr)
@@ -30,6 +32,16 @@ SceneManeger::~SceneManeger()
 // 初期化
 void SceneManeger::InitManeger()
 {
+	//==================================================
+	// ゲームマネージャー
+	//==================================================
+	m_pGameManager = new GameManager;
+
+	//==================================================
+	// シーン
+	//==================================================
+	m_pSceneResult = new SceneResult;
+
 	//==================================================
 	// 地面
 	//==================================================
@@ -103,6 +115,16 @@ void SceneManeger::InitManeger()
 // デストラクタ(実質)
 void SceneManeger::Destructor()
 {
+	//==================================================
+	// ゲームマネージャー
+	//==================================================
+	delete m_pGameManager;
+
+	//==================================================
+	// シーン
+	//==================================================
+	delete m_pSceneResult;
+
 	//==================================================
 	// カメラ
 	//==================================================
@@ -219,8 +241,29 @@ void SceneManeger::Destructor()
 	m_isFollowCamera = false;
 }
 
+// 更新
 void SceneManeger::UpdateManeger()
 {
+	switch (m_sceneType)
+	{
+	case SceneType::SCENE_TITLE:
+		// タイトルの更新
+		return;
+
+	case SceneType::SCENE_RESULT:
+		// リザルトの更新
+		m_pSceneResult->Update();
+		if (m_pSceneResult->IsRestart())
+		{
+			RestartGame();
+		}
+		return;
+
+	case SceneType::SCENE_GAME:
+		// 既存のゲーム更新処理へ進む
+		break;
+	}
+
 	//射撃モードとカメラモードの切り替え
 	if (IsKeyTrigger('M'))
 	{
@@ -347,7 +390,26 @@ void SceneManeger::UpdateManeger()
 		m_pPlayer->Hit();
 	}
 
+	//＝＝＝ゲームクリア判定＝＝＝
+	if (/* ゴールに到達した場合 */0)
+	{
+		m_pGameManager->GameClear();
+	}
 
+	//＝＝＝ゲームオーバー判定＝＝＝
+	if (/* ゲームオーバー条件を満たした場合 */0)
+	{
+		m_pGameManager->GameOver();
+	}
+
+	//＝＝＝リザルトシーンへの切り替え＝＝＝
+	if (m_pGameManager->IsGameClear() ||
+		m_pGameManager->IsGameOver())
+	{
+		// SceneResultへ切り替える処理
+		ChangeScene(SceneType::SCENE_RESULT);
+		return;
+	}
 }
 
 void SceneManeger::DrawManeger()
@@ -423,6 +485,14 @@ void SceneManeger::DrawManeger()
 	}
 }
 
+// シーン遷移
+void SceneManeger::ChangeScene(SceneType nextScene)
+{
+	m_sceneType = nextScene;
+}
+
+
+// UI用深度テスト初期化
 void SceneManeger::UIDepthInit()
 {
 	// UI用深度ステートの設定
@@ -488,3 +558,17 @@ void SceneManeger::UIDraw()
 		oldState->Release();
 }
 
+// リスタート
+void SceneManeger::RestartGame()
+{
+	// ゲームの進行状態をリセット
+	m_pGameManager->Reset();
+
+	// プレイヤーの状態をリセット
+
+	// 敵の状態をリセット
+	m_pEnemy->Reset();
+
+	// ゲームシーンへ切り替え
+	ChangeScene(SceneType::SCENE_GAME);
+}
