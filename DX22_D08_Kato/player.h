@@ -60,6 +60,10 @@ public:
 
 	//当たり判定の取得
 	const Collision::Box& GetCollisionBox() { return m_collision; }
+
+	bool IsFlying() const;
+	DirectX::XMFLOAT3 GetVelocity() const;
+	bool IsAiming() const;  // 発射前の状態か判定
 	/*void SetScale(float x, float y, float z);*/
 private:
 	// 発射時の初速度を計算

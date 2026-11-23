@@ -495,3 +495,20 @@ std::vector<DirectX::XMFLOAT3> Player::CalculatePredictionPoints() const
 
 	return points;
 }
+
+bool Player::IsFlying() const
+{
+	return m_shotStep == SHOT_MOVE;
+}
+
+DirectX::XMFLOAT3 Player::GetVelocity() const
+{
+	return m_move;
+}
+
+bool Player::IsAiming() const
+{
+	return m_shotStep == SHOT_IDLE ||
+		m_shotStep == SHOT_ANGLE ||
+		m_shotStep == SHOT_POWER;
+}

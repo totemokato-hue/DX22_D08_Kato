@@ -1,7 +1,11 @@
+//＝＝＝インクルード＝＝＝
 #include "SceneManeger.h"
 
+// コンストラクタ
 SceneManeger::SceneManeger()
-	: m_pGround(nullptr)
+	: m_pGameManager(nullptr)
+	, m_pSceneResult(nullptr)
+	, m_pGround(nullptr)
 	, m_pGoal(nullptr)
 	, m_pCamera(nullptr)
 	, m_pModel(nullptr)
@@ -9,6 +13,9 @@ SceneManeger::SceneManeger()
 	, m_pPowerGauge(nullptr)
 	, fPoint(nullptr)
 	, m_tCamera(nullptr)
+	, m_pPlayerCamera(nullptr)
+	, m_pFollowCamera(nullptr)
+	, m_isFollowCamera(false)
 	, pUIDepthState(nullptr)
 	, m_pWall(nullptr)
 	, m_pEnemy(nullptr)
@@ -16,111 +23,247 @@ SceneManeger::SceneManeger()
 
 }
 
+// デストラクタ
 SceneManeger::~SceneManeger()
 {
+
 }
 
+// 初期化
 void SceneManeger::InitManeger()
 {
+	//==================================================
+	// ゲームマネージャー
+	//==================================================
+	m_pGameManager = new GameManager;
+
+	//==================================================
+	// シーン
+	//==================================================
+	m_pSceneResult = new SceneResult;
+
+	//==================================================
+	// 地面
+	//==================================================
 	m_pGround = new Ground;
 	m_pGround->SetPos(0.0f, -0.2f, 0.0f);
 	m_pGround->SetScale(10.0f, 0.4f, 20.0f);
+
+	//==================================================
+	// ゴール
+	//==================================================
 	m_pGoal = new Goal;
 	m_pGoal->SetPos(0.0f, 1.0f, 6.0f);
-	/*m_pCamera = new CameraDebug;*/
+
+	//==================================================
+	// プレイヤー
+	//==================================================
 	m_pPlayer = new Player;
 	m_pPlayer->SetPos(0.0f, 1.0f, -6.0f);
+
+	//==================================================
+	// パワーゲージ
+	//==================================================
 	m_pPowerGauge = new PowerGauge;
 	m_pPowerGauge->SetPlayer(m_pPlayer);
-	// 敵の生成
-	m_pEnemy = new Enemy();
+
+	//==================================================
+	// 発射前のカメラ
+	//==================================================
+	m_pPlayerCamera = new CameraPlayer;
+	m_pPlayerCamera->SetPlayer(m_pPlayer);
+	m_pPlayer->SetCamera(m_pPlayerCamera);
+
+	//==================================================
+	// 発射後のカメラ
+	//==================================================
+	m_pFollowCamera = new CameraFollow;
+	m_pFollowCamera->SetPlayer(m_pPlayer);
+
+	// 現在使用するカメラ
+	m_pCamera = m_pPlayerCamera;
+
+	//==================================================
+	// トップカメラ・注視点
+	//==================================================
+	m_tCamera = new TopCamera;
+	fPoint = new ForcusPoint;
+
+	fPoint->SetCamera(m_tCamera);
+	m_tCamera->SetForcus(fPoint);
+
+	//==================================================
+	// 壁
+	//==================================================
+	m_pWall = new Wall;
+	m_pWall->SetPos(0.0f, 0.0f, 0.0f);
+	m_pWall->SetScale(10.0f, 4.0f, 1.0f);
+
+	//==================================================
+	// 敵
+	//==================================================
+	m_pEnemy = new Enemy;
 	m_pEnemy->SetPos(5.0f, 1.0f, 20.0f);
 	m_pEnemy->SetScale(1.0f, 2.0f, 1.0f);
 
-	CameraPlayer* pCamera = new CameraPlayer();
-	m_pPlayer->SetCamera(pCamera);//球を打ち出すためのカメラを設定
-	pCamera->SetPlayer(m_pPlayer);
-	TopCamera* tCamera = new TopCamera();
-	fPoint = new ForcusPoint();
-
-	m_pCamera = pCamera;
-
-	fPoint->SetCamera(tCamera);//トップカメラの設定
-	tCamera->SetForcus(fPoint);
-	m_tCamera = tCamera;
-	m_pWall = new Wall();
-	m_pWall->SetPos(0.0f,0.0f,0.0f);
-	m_pWall->SetScale(10.0f,4.0f,1.0f);
-
-	// UI用深度テストを初期化
+	//==================================================
+	// UI用深度ステート
+	//==================================================
 	UIDepthInit();
 }
 
+// デストラクタ(実質)
 void SceneManeger::Destructor()
 {
-	if (m_pGround) 
-	{
-		delete m_pGround;
-		m_pGround = nullptr;
-	}
+	//==================================================
+	// ゲームマネージャー
+	//==================================================
+	delete m_pGameManager;
 
-	if (m_pGoal) 
-	{
-		delete m_pGoal;
-		m_pGoal = nullptr;
-	}
+	//==================================================
+	// シーン
+	//==================================================
+	delete m_pSceneResult;
 
-	if (m_pCamera)
-	{
-		delete m_pCamera;
-		m_pCamera = nullptr;
-	}
+	//==================================================
+	// カメラ
+	//==================================================
 
+	// 現在使用中のカメラは参照用なのでdeleteしない
+	m_pCamera = nullptr;
+
+	// プレイヤーが保持しているカメラへの参照も
+	// プレイヤー削除時に使用される可能性があるため、
+	// 先にプレイヤーを解放する
+
+	//==================================================
+	// プレイヤー
+	//==================================================
 	if (m_pPlayer)
 	{
 		delete m_pPlayer;
 		m_pPlayer = nullptr;
 	}
 
-	if (m_pPowerGauge) 
+	//==================================================
+	// 発射前のカメラ
+	//==================================================
+	if (m_pPlayerCamera)
+	{
+		delete m_pPlayerCamera;
+		m_pPlayerCamera = nullptr;
+	}
+
+	//==================================================
+	// 発射後のカメラ
+	//==================================================
+	if (m_pFollowCamera)
+	{
+		delete m_pFollowCamera;
+		m_pFollowCamera = nullptr;
+	}
+
+	//==================================================
+	// 地面
+	//==================================================
+	if (m_pGround)
+	{
+		delete m_pGround;
+		m_pGround = nullptr;
+	}
+
+	//==================================================
+	// ゴール
+	//==================================================
+	if (m_pGoal)
+	{
+		delete m_pGoal;
+		m_pGoal = nullptr;
+	}
+
+	//==================================================
+	// パワーゲージ
+	//==================================================
+	if (m_pPowerGauge)
 	{
 		delete m_pPowerGauge;
 		m_pPowerGauge = nullptr;
 	}
 
-	if (pUIDepthState)
-	{
-		pUIDepthState->Release();
-		pUIDepthState = nullptr;
-	}
-
-	if (m_tCamera) 
+	//==================================================
+	// トップカメラ
+	//==================================================
+	if (m_tCamera)
 	{
 		delete m_tCamera;
 		m_tCamera = nullptr;
 	}
 
-	if (fPoint) 
+	//==================================================
+	// 注視点
+	//==================================================
+	if (fPoint)
 	{
 		delete fPoint;
 		fPoint = nullptr;
 	}
 
+	//==================================================
+	// 壁
+	//==================================================
 	if (m_pWall)
 	{
 		delete m_pWall;
 		m_pWall = nullptr;
 	}
 
+	//==================================================
+	// 敵
+	//==================================================
 	if (m_pEnemy)
 	{
 		delete m_pEnemy;
 		m_pEnemy = nullptr;
 	}
+
+	//==================================================
+	// UI用深度ステート
+	//==================================================
+	if (pUIDepthState)
+	{
+		pUIDepthState->Release();
+		pUIDepthState = nullptr;
+	}
+
+	//==================================================
+	// 状態初期化
+	//==================================================
+	m_isFollowCamera = false;
 }
 
+// 更新
 void SceneManeger::UpdateManeger()
 {
+	switch (m_sceneType)
+	{
+	case SceneType::SCENE_TITLE:
+		// タイトルの更新
+		return;
+
+	case SceneType::SCENE_RESULT:
+		// リザルトの更新
+		m_pSceneResult->Update();
+		if (m_pSceneResult->IsRestart())
+		{
+			RestartGame();
+		}
+		return;
+
+	case SceneType::SCENE_GAME:
+		// 既存のゲーム更新処理へ進む
+		break;
+	}
+
 	//射撃モードとカメラモードの切り替え
 	if (IsKeyTrigger('M'))
 	{
@@ -140,33 +283,56 @@ void SceneManeger::UpdateManeger()
 		//正面のトップカメラ
 	case F_CameraMode:
 		m_tCamera->SetMode(TopCamera::FRONT);
-		fPoint->Update(0.0f,false);
+		fPoint->Update(0.0f, false);
 		m_pGoal->Update();
 		break;
 
 	case R_CameraMode:
 		m_tCamera->SetMode(TopCamera::RIGHT);
-		fPoint->Update(-DirectX::XM_PIDIV2,true);
+		fPoint->Update(-DirectX::XM_PIDIV2, true);
 		m_pGoal->Update();
 		break;
 
 	case L_CameraMode:
 		m_tCamera->SetMode(TopCamera::LEFT);
-		fPoint->Update(DirectX::XM_PIDIV2,true);
+		fPoint->Update(DirectX::XM_PIDIV2, true);
 		m_pGoal->Update();
 		break;
 
 
-		//射撃モード
 	case ShotMode:
 		m_pGround->Update();
 		m_pGoal->Update();
 		m_pPlayer->Update();
+
+		// 発射後は追従カメラに切り替える
+		if (m_pPlayer->IsFlying())
+		{
+			m_isFollowCamera = true;
+		}
+
+		// 発射前の状態に戻ったら通常カメラに戻す
+		if (m_pPlayer->IsAiming())
+		{
+			m_isFollowCamera = false;
+		}
+
+		// 使用するカメラを選択
+		if (m_isFollowCamera)
+		{
+			m_pCamera = m_pFollowCamera;
+		}
+		else
+		{
+			m_pCamera = m_pPlayerCamera;
+		}
+
+		// 選択したカメラを更新
 		m_pCamera->Update();
+
 		m_pWall->Update();
-		
 		break;
-		
+
 	}
 
 	// 敵の更新
@@ -190,7 +356,7 @@ void SceneManeger::UpdateManeger()
 			m_pEnemy->Hit();
 		}
 	}
-	
+
 	//トップカメラの切り替え
 	if (m_nScene != ShotMode)
 	{
@@ -224,7 +390,26 @@ void SceneManeger::UpdateManeger()
 		m_pPlayer->Hit();
 	}
 
+	//＝＝＝ゲームクリア判定＝＝＝
+	if (/* ゴールに到達した場合 */0)
+	{
+		m_pGameManager->GameClear();
+	}
 
+	//＝＝＝ゲームオーバー判定＝＝＝
+	if (/* ゲームオーバー条件を満たした場合 */0)
+	{
+		m_pGameManager->GameOver();
+	}
+
+	//＝＝＝リザルトシーンへの切り替え＝＝＝
+	if (m_pGameManager->IsGameClear() ||
+		m_pGameManager->IsGameOver())
+	{
+		// SceneResultへ切り替える処理
+		ChangeScene(SceneType::SCENE_RESULT);
+		return;
+	}
 }
 
 void SceneManeger::DrawManeger()
@@ -300,6 +485,14 @@ void SceneManeger::DrawManeger()
 	}
 }
 
+// シーン遷移
+void SceneManeger::ChangeScene(SceneType nextScene)
+{
+	m_sceneType = nextScene;
+}
+
+
+// UI用深度テスト初期化
 void SceneManeger::UIDepthInit()
 {
 	// UI用深度ステートの設定
@@ -363,4 +556,19 @@ void SceneManeger::UIDraw()
 
 	if (oldState)
 		oldState->Release();
+}
+
+// リスタート
+void SceneManeger::RestartGame()
+{
+	// ゲームの進行状態をリセット
+	m_pGameManager->Reset();
+
+	// プレイヤーの状態をリセット
+
+	// 敵の状態をリセット
+	m_pEnemy->Reset();
+
+	// ゲームシーンへ切り替え
+	ChangeScene(SceneType::SCENE_GAME);
 }
