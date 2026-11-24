@@ -5,7 +5,6 @@
 #include "SceneResult.h"
 #include "Ground.h"
 #include "Scene.h"
-#include "Goal.h"
 #include "camera.h"
 #include "player.h"
 #include "ShaderList.h"
@@ -68,7 +67,6 @@ private:
 	GameManager* m_pGameManager;					// ゲームマネージャー
 	SceneResult* m_pSceneResult;					// リザルトシーン
 	Ground* m_pGround;								// 地面オブジェクト
-	Goal* m_pGoal;									// ゴールオブジェクト
 	Camera* m_pCamera;								// ゲーム中に動かすカメラ
 	Player* m_pPlayer;								// プレイヤーオブジェクト
 	Model* m_pModel;								// モデル

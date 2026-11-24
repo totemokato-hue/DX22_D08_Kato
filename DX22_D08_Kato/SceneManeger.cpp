@@ -6,7 +6,6 @@ SceneManeger::SceneManeger()
 	: m_pGameManager(nullptr)
 	, m_pSceneResult(nullptr)
 	, m_pGround(nullptr)
-	, m_pGoal(nullptr)
 	, m_pCamera(nullptr)
 	, m_pModel(nullptr)
 	, m_pPlayer(nullptr)
@@ -49,11 +48,6 @@ void SceneManeger::InitManeger()
 	m_pGround->SetPos(0.0f, -0.2f, 0.0f);
 	m_pGround->SetScale(10.0f, 0.4f, 20.0f);
 
-	//==================================================
-	// ゴール
-	//==================================================
-	m_pGoal = new Goal;
-	m_pGoal->SetPos(0.0f, 1.0f, 6.0f);
 
 	//==================================================
 	// プレイヤー
@@ -172,14 +166,6 @@ void SceneManeger::Destructor()
 		m_pGround = nullptr;
 	}
 
-	//==================================================
-	// ゴール
-	//==================================================
-	if (m_pGoal)
-	{
-		delete m_pGoal;
-		m_pGoal = nullptr;
-	}
 
 	//==================================================
 	// パワーゲージ
@@ -284,25 +270,21 @@ void SceneManeger::UpdateManeger()
 	case F_CameraMode:
 		m_tCamera->SetMode(TopCamera::FRONT);
 		fPoint->Update(0.0f, false);
-		m_pGoal->Update();
 		break;
 
 	case R_CameraMode:
 		m_tCamera->SetMode(TopCamera::RIGHT);
 		fPoint->Update(-DirectX::XM_PIDIV2, true);
-		m_pGoal->Update();
 		break;
 
 	case L_CameraMode:
 		m_tCamera->SetMode(TopCamera::LEFT);
 		fPoint->Update(DirectX::XM_PIDIV2, true);
-		m_pGoal->Update();
 		break;
 
 
 	case ShotMode:
 		m_pGround->Update();
-		m_pGoal->Update();
 		m_pPlayer->Update();
 
 		// 発射後は追従カメラに切り替える
@@ -454,7 +436,6 @@ void SceneManeger::DrawManeger()
 	}
 	//常に表示するもの
 	m_pGround->Draw();
-	m_pGoal->Draw();
 	m_pPlayer->Draw();
 	m_pWall->Draw();
 
