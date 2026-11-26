@@ -149,8 +149,48 @@ void Player::Draw()
 
 void Player::DrawPrediction()
 {
+	float power = m_shotPower;
+
+	if (m_shotPower == SHOT_ANGLE)
+	{
+		power = 2.0f;
+	}
+
 	// 放物線上の座標を取得
-	const auto points = CalculatePredictionPoints();
+	const auto points = CalculatePredictionPoints(power);
+
+	// 描画できる座標がない場合
+	if (points.size() < 2)
+	{
+		return;
+	}
+
+	// 予測線の色
+	const DirectX::XMFLOAT4 lineColor(
+		1.0f,
+		0.0f,
+		1.0f,
+		1.0f
+	);
+
+	// 各座標を線でつなぐ
+	for (std::size_t i = 1; i < points.size(); ++i)
+	{
+		Geometory::AddLine(
+			points[i - 1],
+			points[i],
+			lineColor
+		);
+	}
+
+	// 線をまとめて描画
+	Geometory::DrawLines();
+}
+
+void Player::MaxDrawPrediction()
+{
+	// 放物線上の座標を取得
+	const auto points = CalculatePredictionPoints(7.0f, true);
 
 	// 描画できる座標がない場合
 	if (points.size() < 2)
@@ -160,9 +200,9 @@ void Player::DrawPrediction()
 
 	// 予測線の色（水色）
 	const DirectX::XMFLOAT4 lineColor(
-		1.0f,
 		0.0f,
 		1.0f,
+		0.0f,
 		1.0f
 	);
 
@@ -203,6 +243,11 @@ void Player::initialize()
 void Player::SetCamera(Camera* pCamera)
 {
 	m_pCamera = pCamera;
+}
+
+int Player::GetScene()
+{
+	return m_shotStep;
 }
 
 void Player::UpdateIdle()
@@ -362,7 +407,7 @@ DirectX::XMFLOAT3 Player::GetShotVelocity(float power) const
 	return velocity;
 }
 
-std::vector<DirectX::XMFLOAT3> Player::CalculatePredictionPoints() const
+std::vector<DirectX::XMFLOAT3> Player::CalculatePredictionPoints(float power,bool toLanding) const
 {
 	using namespace DirectX;
 
@@ -375,18 +420,7 @@ std::vector<DirectX::XMFLOAT3> Player::CalculatePredictionPoints() const
 		return points;
 	}
 
-	// パワーを取得
-	// 角度調整中は最小パワー1.0
-	float power = 1.0f;
-
-	if (m_shotStep == SHOT_ANGLE)
-	{
-		power = 2.0f;
-	}
-	else if (m_shotStep == SHOT_POWER)
-	{
-		power = m_shotPower;
-	}
+	
 
 	// 発射速度を取得
 	XMFLOAT3 velocity = GetShotVelocity(power);
@@ -443,19 +477,32 @@ std::vector<DirectX::XMFLOAT3> Player::CalculatePredictionPoints() const
 			break;
 		}
 	}
-
-	// 着地地点まで線を出さない
-	if (landingFrame >= 0)
+	if (toLanding)
 	{
-		// 着地までの約2/3を上限にする
-		int beforeLanding =
-			(landingFrame - 1) * 2 / 3;
-
-		if (beforeLanding < previewSteps)
+		if (landingFrame >= 0)
 		{
-			previewSteps = beforeLanding;
+			previewSteps = landingFrame;
+		}
+		else
+		{
+			previewSteps = 300;
 		}
 	}
+	else
+	{
+		// 通常用：今までどおり着地前の約2/3まで
+		if (landingFrame >= 0)
+		{
+			int beforeLanding =
+				(landingFrame - 1) * 2 / 3;
+
+			if (beforeLanding < previewSteps)
+			{
+				previewSteps = beforeLanding;
+			}
+		}
+	}
+	
 
 	if (previewSteps <= 0)
 	{

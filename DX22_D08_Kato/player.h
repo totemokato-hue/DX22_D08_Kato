@@ -41,12 +41,16 @@ public:
 	// 予測線の描画
 	void DrawPrediction();
 
+	//最大の予測線の描画
+	void MaxDrawPrediction();
+
 	void initialize();
 
 	void SetCamera(Camera* pCamera);
 	DirectX::XMFLOAT3 GetPos() { return m_pos; }
 	float GetPower() { return m_time; }
 
+	int GetScene();
 	void UpdateIdle();
 	void UpdateAngle();
 	void UpdatePower();
@@ -70,5 +74,5 @@ private:
 	DirectX::XMFLOAT3 GetShotVelocity(float power) const;
 
 	// 放物線の座標を計算
-	std::vector<DirectX::XMFLOAT3> CalculatePredictionPoints() const;
+	std::vector<DirectX::XMFLOAT3> CalculatePredictionPoints(float power,bool toLanding = false) const;
 };

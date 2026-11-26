@@ -230,6 +230,7 @@ void SceneManeger::Destructor()
 // 更新
 void SceneManeger::UpdateManeger()
 {
+	
 	switch (m_sceneType)
 	{
 	case SceneType::SCENE_TITLE:
@@ -438,7 +439,7 @@ void SceneManeger::DrawManeger()
 	m_pGround->Draw();
 	m_pPlayer->Draw();
 	m_pWall->Draw();
-
+	m_pPlayer->MaxDrawPrediction();
 	//当たったら消えるもの
 	if (m_pEnemy)
 	{
@@ -449,6 +450,7 @@ void SceneManeger::DrawManeger()
 	if (m_nScene == ShotMode)
 	{
 		m_pPlayer->DrawPrediction();
+		
 	}
 	//UIは最後に表示する
 	if (m_nScene == ShotMode)
@@ -464,6 +466,8 @@ void SceneManeger::DrawManeger()
 			m_pEnemy->Reset();
 		}
 	}
+	
+
 }
 
 // シーン遷移
