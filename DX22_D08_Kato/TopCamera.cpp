@@ -3,7 +3,7 @@
 
 
 TopCamera::TopCamera()
-    :m_radXZ(0.0f), m_radY(0.8f), m_radius(4.0f), m_Point(nullptr), m_mode(FRONT)
+    :m_radXZ(0.0f), m_radY(0.8f), m_radius(8.0f), m_Point(nullptr), m_mode(FRONT)
 {
 
 }
