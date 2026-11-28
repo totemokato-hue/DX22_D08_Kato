@@ -23,6 +23,10 @@ void CameraPlayer::Update()
 	{
 		m_radXZ -= 0.01;
 	}
+	if (IsKeyTrigger(VK_DOWN))
+	{
+		m_radXZ = 0;
+	}
 	//if (IsKeyPress('W'))
 	//{
 	//	m_radY += 0.1;
