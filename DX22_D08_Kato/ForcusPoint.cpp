@@ -46,7 +46,12 @@ void ForcusPoint::Update(float cameraYaw,bool lockX = false)
 	{
 		right = 1.0f;
 	}
-
+	if (IsKeyTrigger(VK_DOWN))
+	{
+		m_pos.x = 0.0f;
+		m_pos.z = 0.0f;
+			
+	}
 	//camearaYaw = ƒ‰ƒWƒAƒ“Šp
 	float S = sinf(cameraYaw);
 	float C = cosf(cameraYaw);
